@@ -1,0 +1,2 @@
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar qc libEngine.a CMakeFiles/Engine.dir/src/EntryPoint.cpp.o CMakeFiles/Engine.dir/src/Wizard/Application.cpp.o
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib libEngine.a

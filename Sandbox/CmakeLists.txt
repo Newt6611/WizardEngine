@@ -1,0 +1,11 @@
+cmake_minimum_required(VERSION 3.10)
+
+project(Sandbox)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+include_directories(${CMAKE_SOURCE_DIR}/Engine/src)
+
+add_executable(Sandbox src/Sandbox.cpp)
+target_link_libraries(Sandbox Engine)
