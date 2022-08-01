@@ -1,8 +1,0 @@
-/Users/newt/Dev/Engine/build/CMakeFiles/edit_cache.dir
-/Users/newt/Dev/Engine/build/CMakeFiles/rebuild_cache.dir
-/Users/newt/Dev/Engine/build/Sandbox/CMakeFiles/Sandbox.dir
-/Users/newt/Dev/Engine/build/Sandbox/CMakeFiles/edit_cache.dir
-/Users/newt/Dev/Engine/build/Sandbox/CMakeFiles/rebuild_cache.dir
-/Users/newt/Dev/Engine/build/Engine/CMakeFiles/Engine.dir
-/Users/newt/Dev/Engine/build/Engine/CMakeFiles/edit_cache.dir
-/Users/newt/Dev/Engine/build/Engine/CMakeFiles/rebuild_cache.dir
