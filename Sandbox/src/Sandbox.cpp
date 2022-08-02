@@ -1,14 +1,12 @@
+#include "Wizard.h"
 #include "EntryPoint.h"
-#include "Wizard/Application.h"
-
-#include <iostream>
 
 class Sandbox : public Wizard::Application
 {
 public:
     Sandbox() 
     {
-        std::cout << "sandbox" << std::endl;
+        WZ_INFO("init sandbox");
     }
 
     ~Sandbox() 
