@@ -3,6 +3,8 @@
 
 #include "Core/Application.h"
 
+#include <GLFW/glfw3.h>
+
 extern Wizard::Application* CreateApplication();
 
 int main()

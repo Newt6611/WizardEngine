@@ -6,7 +6,7 @@ class Sandbox : public Wizard::Application
 public:
     Sandbox() 
     {
-        WZ_INFO("init sandbox");
+        
     }
 
     ~Sandbox() 
