@@ -52,7 +52,7 @@ namespace Wizard {
         appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
         appInfo.pEngineName = "Winzard Engine";
         appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-        appInfo.apiVersion = VK_API_VERSION_1_3;
+        appInfo.apiVersion = VK_API_VERSION_1_0;
 
         VkInstanceCreateInfo instanceCreateInfo {};
         instanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -146,7 +146,13 @@ namespace Wizard {
     {
         FindQueueFamilies(device);
         bool deviceExtensionSupport = CheckDeviceExtensionSupport(device);
-        return m_QueueFamilies.IsComplete() && deviceExtensionSupport;
+
+        bool swapChainAdequate = false;
+        if (deviceExtensionSupport) {
+            QuerySwapChainSupport(device);
+            swapChainAdequate = !m_SwapChainDetails.formats.empty() && !m_SwapChainDetails.presentModes.empty();
+        }
+        return m_QueueFamilies.IsComplete() && deviceExtensionSupport && swapChainAdequate;
     }
 
     void VulkanRenderer::FindQueueFamilies(VkPhysicalDevice device) 
@@ -173,9 +179,21 @@ namespace Wizard {
         }
     }
 
-    bool CheckDeviceExtensionSupport(VkPhysicalDevice device)
+    bool VulkanRenderer::CheckDeviceExtensionSupport(VkPhysicalDevice device)
     {
+        uint32_t extensionCount;
+        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+        std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
         
+        // TODO: could be a better code to optmize
+        std::set<std::string> requiredExtensions(m_DeviceExtensions.begin(), m_DeviceExtensions.end());
+        for (const auto& extension : availableExtensions) {
+            requiredExtensions.erase(extension.extensionName);
+        }
+
+        return requiredExtensions.empty();
     }
 
     void VulkanRenderer::CreateLogicalDevice()
@@ -206,11 +224,55 @@ namespace Wizard {
         createInfo.enabledExtensionCount = m_DeviceExtensions.size();
         createInfo.ppEnabledExtensionNames = m_DeviceExtensions.data();
 
-        if (vkCreateDevice(m_PhysicalDevice, &createInfo, nullptr, &m_Device) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create logical device!");
+        VkResult result = vkCreateDevice(m_PhysicalDevice, &createInfo, nullptr, &m_Device);
+        if (result != VK_SUCCESS) {
+            WZ_ENGINE_ERROR("Failed To Create Logical Device Error Code: {}", result);
+            return;
         }
 
         vkGetDeviceQueue(m_Device, m_QueueFamilies.graphicsFamily.value(), 0, &m_GraphicsQueue);
         vkGetDeviceQueue(m_Device, m_QueueFamilies.presentFamily.value(), 0, &m_PresentQueue);
+    }
+
+    void VulkanRenderer::QuerySwapChainSupport(VkPhysicalDevice device)
+    {
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, m_Surface, &m_SwapChainDetails.capabilities);
+        uint32_t formatCount;
+        vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_Surface, &formatCount, nullptr);
+
+        if (formatCount != 0) {
+            m_SwapChainDetails.formats.resize(formatCount);
+            vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_Surface, &formatCount, m_SwapChainDetails.formats.data());
+        }
+
+        uint32_t presentModeCount;
+        vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_Surface, &presentModeCount, nullptr);
+
+        if (presentModeCount != 0) {
+            m_SwapChainDetails.presentModes.resize(presentModeCount);
+            vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_Surface, &presentModeCount, m_SwapChainDetails.presentModes.data());
+        }
+    }
+
+    VkSurfaceFormatKHR VulkanRenderer::ChooseSwapSurfaceFormat()
+    {
+        for (const auto& availableFormat : m_SwapChainDetails.formats) {
+            if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+                return availableFormat;
+            }
+        }
+
+        return m_SwapChainDetails.formats[0];
+    }
+
+    VkPresentModeKHR VulkanRenderer::ChooseSwapPresentMode()
+    {
+        for (const auto& availablePresentMode : m_SwapChainDetails.presentModes) {
+            if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+                return availablePresentMode;
+            }
+        }
+
+        return VK_PRESENT_MODE_FIFO_KHR;
     }
 }

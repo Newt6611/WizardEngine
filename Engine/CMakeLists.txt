@@ -32,12 +32,17 @@ find_package(Vulkan REQUIRED)
 # All Files
 set(ALL_FILES 
     # Core
+    src/Core/Application.h
     src/Core/Application.cpp
+    src/Core/Log.h
     src/Core/Log.cpp
+    src/Core/Window.h
     src/Core/Window.cpp
 
     # Renderer
+    src/Renderer/Renderer.h
     src/Renderer/Renderer.cpp
+    src/Renderer/VulkanRenderer.h
     src/Renderer/VulkanRenderer.cpp
 )
 

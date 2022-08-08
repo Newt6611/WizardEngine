@@ -18,6 +18,22 @@ namespace Wizard {
             return "Vulkan";
         }
 
+    public:
+        struct QueueFamilies {
+            std::optional<uint32_t> graphicsFamily;
+            std::optional<uint32_t> presentFamily;
+
+            bool IsComplete() {
+                return graphicsFamily.has_value() && presentFamily.has_value();
+            }
+        };
+
+        struct SwapChainSupportDetails {
+            VkSurfaceCapabilitiesKHR capabilities;
+            std::vector<VkSurfaceFormatKHR> formats;
+            std::vector<VkPresentModeKHR> presentModes;
+        };
+
     private:
         void Init();
         void Shutdown();
@@ -34,14 +50,24 @@ namespace Wizard {
 
         void CreateLogicalDevice();
 
+        void QuerySwapChainSupport(VkPhysicalDevice device);
+        VkSurfaceFormatKHR ChooseSwapSurfaceFormat();
+        VkPresentModeKHR ChooseSwapPresentMode();
+
+    
+
     private:
 #ifdef WZ_DEBUG
         std::vector<const char*> m_ValidationLayers = {
             "VK_LAYER_KHRONOS_validation"
         };
 #endif
+
+
         std::vector<const char*>  m_DeviceExtensions = {
+#ifdef WZ_APPLE
             "VK_KHR_portability_subset",
+#endif      
             VK_KHR_SWAPCHAIN_EXTENSION_NAME
         };
 
@@ -50,18 +76,12 @@ namespace Wizard {
         VkPhysicalDevice m_PhysicalDevice = VK_NULL_HANDLE;
         VkDevice m_Device = VK_NULL_HANDLE;
 
-        struct QueueFamilies {
-            std::optional<uint32_t> graphicsFamily;
-            std::optional<uint32_t> presentFamily;
-
-            bool IsComplete() {
-                return graphicsFamily.has_value() && presentFamily.has_value();
-            }
-        };
 
         QueueFamilies m_QueueFamilies;
         VkQueue m_GraphicsQueue;
         VkQueue m_PresentQueue;
+
+        SwapChainSupportDetails m_SwapChainDetails;
     };
 }
 
