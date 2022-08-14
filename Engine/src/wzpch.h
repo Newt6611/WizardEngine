@@ -2,6 +2,9 @@
 #include <iostream>
 #include <string>
 #include <cstring>
+#include <cstdint> 
+#include <limits>
+#include <algorithm>
 
 #include <vector>
 #include <map>

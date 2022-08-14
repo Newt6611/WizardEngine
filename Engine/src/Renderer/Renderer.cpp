@@ -21,5 +21,8 @@ namespace Wizard
             return nullptr;
             break;
         }
+
+        WZ_ENGINE_ERROR("Return Null Renderer");
+        return nullptr;
     }
 }

@@ -50,11 +50,13 @@ namespace Wizard {
 
         void CreateLogicalDevice();
 
+        void CreateSwapChain();
         void QuerySwapChainSupport(VkPhysicalDevice device);
         VkSurfaceFormatKHR ChooseSwapSurfaceFormat();
         VkPresentModeKHR ChooseSwapPresentMode();
+        VkExtent2D ChooseSwapExtent();
 
-    
+        void CreateImageViews();
 
     private:
 #ifdef WZ_DEBUG
@@ -82,6 +84,11 @@ namespace Wizard {
         VkQueue m_PresentQueue;
 
         SwapChainSupportDetails m_SwapChainDetails;
+        VkFormat m_SwapChainFormat;
+        VkExtent2D m_Extent;
+        VkSwapchainKHR m_SwapChain;
+        std::vector<VkImage> m_SwapChainImages;
+        std::vector<VkImageView> m_SwapChainImageViews;
     };
 }
 
