@@ -16,8 +16,6 @@ namespace Wizard {
         
         void Run();
 
-        void Print(int);
-
     protected:
         void OnUpdate();
         void OnEvent(Event& e);

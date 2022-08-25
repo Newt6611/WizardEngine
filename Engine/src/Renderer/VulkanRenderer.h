@@ -58,6 +58,9 @@ namespace Wizard {
 
         void CreateImageViews();
 
+        void CreateRenderPass();
+        void CreatePipeline();
+
     private:
 #ifdef WZ_DEBUG
         std::vector<const char*> m_ValidationLayers = {
@@ -89,6 +92,9 @@ namespace Wizard {
         VkSwapchainKHR m_SwapChain;
         std::vector<VkImage> m_SwapChainImages;
         std::vector<VkImageView> m_SwapChainImageViews;
+
+        VkRenderPass m_RenderPass;
+        VkPipelineLayout m_PipelineLayout;
     };
 }
 

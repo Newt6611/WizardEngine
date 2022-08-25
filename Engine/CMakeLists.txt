@@ -26,11 +26,15 @@ elseif(UNIX AND NOT APPLE)
     add_definitions(-DWZ_LINUX)
 endif()
 
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR})
 
 find_package(Vulkan REQUIRED)
-
 # All Files
 set(ALL_FILES 
+    src/Core.h
+    src/EntryPoint.h
+    src/Wizard.h
+
     # Core
     src/Core/Application.h
     src/Core/Application.cpp
