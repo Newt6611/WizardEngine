@@ -18,6 +18,8 @@ namespace Wizard {
             return "Vulkan";
         }
 
+        void DrawFrame();
+
     public:
         struct QueueFamilies {
             std::optional<uint32_t> graphicsFamily;
@@ -61,6 +63,14 @@ namespace Wizard {
         void CreateRenderPass();
         void CreatePipeline();
 
+        void CreateFramebuffers();
+
+        void CreateCommandPool();
+        void CreateCommandBuffer();
+
+        void RecordCommandBuffer(VkCommandBuffer buffer, uint32_t imageIndex);
+
+        VkShaderModule CreateShaderModule(std::vector<char>& bytecode);
     private:
 #ifdef WZ_DEBUG
         std::vector<const char*> m_ValidationLayers = {
@@ -95,6 +105,12 @@ namespace Wizard {
 
         VkRenderPass m_RenderPass;
         VkPipelineLayout m_PipelineLayout;
+        VkPipeline m_GraphicsPipeline;
+
+        std::vector<VkFramebuffer> m_Framebuffers;
+
+        VkCommandPool m_CommandPool;
+        VkCommandBuffer m_CommandBuffer;
     };
 }
 

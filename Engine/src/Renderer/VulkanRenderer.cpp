@@ -1,7 +1,9 @@
 #include "VulkanRenderer.h"
 #include "Core/Log.h"
-#include <GLFW/glfw3.h>
 #include "Core/Window.h"
+#include "Shader.h"
+
+#include <GLFW/glfw3.h>
 
 namespace Wizard {
     
@@ -26,10 +28,17 @@ namespace Wizard {
 
         CreateRenderPass();
         CreatePipeline();
+        CreateFramebuffers();
+        CreateCommandPool();
     }
 
     void VulkanRenderer::Shutdown()
     {
+        vkDestroyCommandPool(m_Device, m_CommandPool, nullptr);
+        for (int i = 0; i < m_Framebuffers.size(); ++i) {
+            vkDestroyFramebuffer(m_Device, m_Framebuffers[i], nullptr);
+        }
+        vkDestroyPipeline(m_Device, m_GraphicsPipeline, nullptr);
         vkDestroyRenderPass(m_Device, m_RenderPass, nullptr);
         vkDestroyPipelineLayout(m_Device, m_PipelineLayout, nullptr);
         for (int i = 0; i < m_SwapChainImageViews.size(); ++i) {
@@ -39,6 +48,11 @@ namespace Wizard {
         vkDestroyDevice(m_Device, nullptr);
         vkDestroySurfaceKHR(m_Instance, m_Surface, nullptr);
         vkDestroyInstance(m_Instance, nullptr);
+    }
+
+    void VulkanRenderer::DrawFrame()
+    {
+
     }
 
     void VulkanRenderer::CreateSurface()
@@ -433,6 +447,33 @@ namespace Wizard {
 
     void VulkanRenderer::CreatePipeline()
     {
+        std::vector<char> vertShaderCode = Shader::ReadByteCode("C:/Dev/Wizard/Engine/datas/shaders/vert.spv");
+        std::vector<char> fragShaderCode = Shader::ReadByteCode("C:/Dev/Wizard/Engine/datas/shaders/frag.spv");
+
+        VkShaderModule vertShaderModule = CreateShaderModule(vertShaderCode);
+        VkShaderModule fragShaderModule = CreateShaderModule(fragShaderCode);
+
+        VkPipelineShaderStageCreateInfo vertShaderStageCreateInfo{};
+        vertShaderStageCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        vertShaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+        vertShaderStageCreateInfo.module = vertShaderModule;
+        vertShaderStageCreateInfo.pName = "main";
+
+        VkPipelineShaderStageCreateInfo fragShaderStageCreateInfo{};
+        fragShaderStageCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        fragShaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+        fragShaderStageCreateInfo.module = fragShaderModule;
+        fragShaderStageCreateInfo.pName = "main";
+
+        VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageCreateInfo, fragShaderStageCreateInfo };
+
+        VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
+        vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+        vertexInputInfo.vertexBindingDescriptionCount = 0;
+        vertexInputInfo.pVertexBindingDescriptions = nullptr;
+        vertexInputInfo.vertexAttributeDescriptionCount = 0;
+        vertexInputInfo.pVertexAttributeDescriptions = nullptr;
+
         std::vector<VkDynamicState> dynamicStates = { 
             VK_DYNAMIC_STATE_VIEWPORT,
             VK_DYNAMIC_STATE_SCISSOR
@@ -515,10 +556,149 @@ namespace Wizard {
         pipelineLayoutInfo.pushConstantRangeCount = 0;
         pipelineLayoutInfo.pPushConstantRanges = nullptr;
 
+        
         VkResult result = vkCreatePipelineLayout(m_Device, &pipelineLayoutInfo, nullptr, &m_PipelineLayout);
         if (result != VK_SUCCESS) {
             WZ_ENGINE_ERROR("Faild When Creating PipelineLayout");
             return;
         }
+
+        VkGraphicsPipelineCreateInfo pipelineInfo{};
+        pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+        pipelineInfo.stageCount = 2;
+        pipelineInfo.pStages = shaderStages;
+        pipelineInfo.pVertexInputState = &vertexInputInfo;
+        pipelineInfo.pInputAssemblyState = &inputAssembly;
+        pipelineInfo.pViewportState = &viewportState;
+        pipelineInfo.pRasterizationState = &rasterizer;
+        pipelineInfo.pMultisampleState = &multisampling;
+        pipelineInfo.pDepthStencilState = nullptr;
+        pipelineInfo.pColorBlendState = &colorBlending;
+        pipelineInfo.pDynamicState = &dynamicState;
+        pipelineInfo.layout = m_PipelineLayout;
+        pipelineInfo.renderPass = m_RenderPass;
+        pipelineInfo.subpass = 0;
+
+        result = vkCreateGraphicsPipelines(m_Device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_GraphicsPipeline);
+        if (result != VK_SUCCESS) {
+            WZ_ENGINE_ERROR("Failed When Creating Render Pipeline {}", result);
+        }
+
+        vkDestroyShaderModule(m_Device, vertShaderModule, nullptr);
+        vkDestroyShaderModule(m_Device, fragShaderModule, nullptr);
+    }
+
+    void VulkanRenderer::CreateFramebuffers()
+    {
+        m_Framebuffers.resize(m_SwapChainImageViews.size());
+        for (int i = 0; i < m_Framebuffers.size(); ++i) {
+            VkImageView attachments[] = {
+                m_SwapChainImageViews[i]
+            };
+
+            VkFramebufferCreateInfo framebufferInfo{};
+            framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+            framebufferInfo.renderPass = m_RenderPass;
+            framebufferInfo.attachmentCount = 1;
+            framebufferInfo.pAttachments = attachments;
+            framebufferInfo.width = m_Extent.width;
+            framebufferInfo.height = m_Extent.height;
+            framebufferInfo.layers = 1;
+
+            VkResult result = vkCreateFramebuffer(m_Device, &framebufferInfo, nullptr, &m_Framebuffers[i]);
+            if (result != VK_SUCCESS) {
+                WZ_ENGINE_ERROR("Failed When Createing VkFramebuffer");
+                return;
+            }
+        }
+    }
+
+    void VulkanRenderer::CreateCommandPool()
+    {
+        VkCommandPoolCreateInfo poolInfo{};
+        poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+        poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+        poolInfo.queueFamilyIndex = m_QueueFamilies.graphicsFamily.value();
+        VkResult result = vkCreateCommandPool(m_Device, &poolInfo, nullptr, &m_CommandPool);
+        if (result != VK_SUCCESS) {
+            WZ_ENGINE_ERROR("Failed When Creating Command Pool");
+        }
+    }
+
+    void VulkanRenderer::CreateCommandBuffer()
+    {
+        VkCommandBufferAllocateInfo info{};
+        info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        info.commandPool = m_CommandPool;
+        info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        info.commandBufferCount = 1;
+        VkResult result = vkAllocateCommandBuffers(m_Device, &info, &m_CommandBuffer);
+        if (result != VK_SUCCESS) {
+            WZ_ENGINE_ERROR("Failed When Creating Command Buffer");
+        }
+    }
+
+    void VulkanRenderer::RecordCommandBuffer(VkCommandBuffer buffer, uint32_t imageIndex)
+    {
+        VkCommandBufferBeginInfo begininfo{};
+        begininfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        begininfo.flags = 0;
+        begininfo.pInheritanceInfo = 0;
+        if (vkBeginCommandBuffer(buffer, &begininfo) != VK_SUCCESS) {
+            WZ_ENGINE_ERROR("Error When Begin CommandBuffer");
+        }
+
+        VkRenderPassBeginInfo renderpassInfo{};
+        renderpassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderpassInfo.renderPass = m_RenderPass;
+        renderpassInfo.framebuffer = m_Framebuffers[imageIndex];
+        renderpassInfo.renderArea.offset = { 0,0 };
+        renderpassInfo.renderArea.extent = m_Extent;
+
+        VkClearValue  clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
+        renderpassInfo.clearValueCount = 1;
+        renderpassInfo.pClearValues = &clearColor;
+
+        vkCmdBeginRenderPass(buffer, &renderpassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+        vkCmdBindPipeline(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicsPipeline);
+
+        VkViewport viewport{};
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = static_cast<float>(m_Extent.width);
+        viewport.height = static_cast<float>(m_Extent.height);
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        vkCmdSetViewport(buffer, 0, 1, &viewport);
+
+        VkRect2D scissor{};
+        scissor.offset = { 0, 0 };
+        scissor.extent = m_Extent;
+        vkCmdSetScissor(buffer, 0, 1, &scissor);
+        vkCmdDraw(buffer, 3, 1, 0, 0);
+
+        vkCmdEndRenderPass(buffer);
+
+        if (vkEndCommandBuffer(buffer) != VK_SUCCESS) {
+            WZ_ENGINE_ERROR("Failed To Record Command Buffer!");
+        }
+    }
+
+    VkShaderModule VulkanRenderer::CreateShaderModule(std::vector<char>& bytecode)
+    {
+        VkShaderModuleCreateInfo createInfo{};
+        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        createInfo.codeSize = bytecode.size();
+        createInfo.pCode = (const uint32_t*)bytecode.data();
+
+        VkShaderModule shaderModule;
+        VkResult result = vkCreateShaderModule(m_Device, &createInfo, nullptr, &shaderModule);
+        if (result != VK_SUCCESS) {
+            WZ_ENGINE_ERROR("Failed When Creating Shader Module");
+            return nullptr;
+        }
+
+        return shaderModule;
     }
 }

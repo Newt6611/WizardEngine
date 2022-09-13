@@ -4,3 +4,6 @@
 [submodule "Engine/thirdparty/glfw"]
 	path = Engine/thirdparty/glfw
 	url = https://github.com/glfw/glfw
+[submodule "Engine/thirdparty/DiligentCore"]
+	path = Engine/thirdparty/DiligentCore
+	url = https://github.com/DiligentGraphics/DiligentCore.git

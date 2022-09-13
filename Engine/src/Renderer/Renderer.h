@@ -12,8 +12,14 @@ namespace Wizard {
     class Renderer
     {
     public:
+        static Renderer* Get() {
+            static Renderer INSTANCE;
+            return &INSTANCE;
+        }
+
         static std::unique_ptr<Renderer> Create(RendererAPI api);
         Renderer() { }
+        Renderer(const Renderer&) = delete;
         virtual ~Renderer() { }
 
         virtual RendererAPI GetAPI() {

@@ -16,6 +16,9 @@ namespace Wizard
         }
 
         Window() {}
+        Window(const Window&) = delete;
+        Window operator=(const Window&) = delete;
+
         virtual ~Window() {
             ShutDown();
         }

@@ -11,11 +11,11 @@ namespace Wizard
         ~MousePositionEvent() { }
 
         inline int GetX() {
-            return m_X;
+            return (int)m_X;
         }
 
         inline int GetY() {
-            return m_Y;
+            return (int)m_Y;
         }
 
         static EventType GetStaticEventType() {

@@ -26,7 +26,7 @@ elseif(UNIX AND NOT APPLE)
     add_definitions(-DWZ_LINUX)
 endif()
 
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR})
+#source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR})
 
 find_package(Vulkan REQUIRED)
 # All Files
@@ -34,6 +34,7 @@ set(ALL_FILES
     src/Core.h
     src/EntryPoint.h
     src/Wizard.h
+    src/wzpch.h
 
     # Core
     src/Core/Application.h
@@ -44,19 +45,24 @@ set(ALL_FILES
     src/Core/Window.cpp
 
     # Renderer
+    src/Renderer/Shader.h
+    src/Renderer/Shader.cpp
     src/Renderer/Renderer.h
     src/Renderer/Renderer.cpp
     src/Renderer/VulkanRenderer.h
     src/Renderer/VulkanRenderer.cpp
+    src/Renderer/VulkanShader.h
+    src/Renderer/VulkanShader.cpp
 )
 
 # Include Directories
 set(INCLUDE_DIRS 
     ${CMAKE_CURRENT_SOURCE_DIR}/src 
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Core 
+    ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty 
     ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/spdlog/include 
-    ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glfw/include 
-    Vulkan::Vulkan    
+    ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glfw/include
+    Vulkan::Vulkan
 )
 
 # Libs
@@ -71,10 +77,13 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 #
 
+
 add_library(Engine ${ALL_FILES})
+add_subdirectory(thirdparty/DiligentCore)
 add_subdirectory(thirdparty/glfw)
 
+target_precompile_headers(Engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/wzpch.h)
 target_include_directories(Engine PUBLIC ${INCLUDE_DIRS})
 target_link_libraries(Engine PUBLIC ${LINK_LIBS})
 
-target_precompile_headers(Engine PRIVATE src/wzpch.h)
+
