@@ -3,13 +3,12 @@
 
 namespace Wizard
 {
-    void Window::Init(uint32_t width, uint32_t height)
+    void Window::Init(uint32_t width, uint32_t height)  
     {
         m_Data.Width = width;
         m_Data.Height = height;
         m_Data.Title = "Wizard Engine";
-        m_WindowShouldClose = false;
-
+        
         if (!glfwInit()) {
             WZ_ENGINE_ERROR("Init GLFW Failed");
             return;

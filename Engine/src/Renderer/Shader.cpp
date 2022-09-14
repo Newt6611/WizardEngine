@@ -6,7 +6,7 @@
 namespace Wizard {
     std::unique_ptr<Shader> Shader::Create()
     {
-        switch (Renderer::Get()->GetAPI())
+        /*switch (Renderer::Get()->GetAPI())
         {
         case RendererAPI::None:
             WZ_ENGINE_ERROR("Create Sgader RenderAPI Can't Be None");
@@ -19,7 +19,7 @@ namespace Wizard {
             WZ_ENGINE_ERROR("Not Support D3D12(Shader) Yet");
             return nullptr;
             break;
-        }
+        }*/
 
         WZ_ENGINE_ERROR("Return Null Renderer");
         return nullptr;

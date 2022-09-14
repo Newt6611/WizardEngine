@@ -1,6 +1,5 @@
 #include "Application.h"
 
-
 namespace Wizard {
     Application::Application()
     {
@@ -11,7 +10,10 @@ namespace Wizard {
         m_Window->Init(800, 600);
         m_Window->SetEventCallback(BIND_FN_EVENT(Application::OnEvent));
 
-        m_Renderer = Renderer::Create(RendererAPI::Vulkan);
+        m_Renderer = std::make_unique<Renderer>();
+        m_Renderer->Init(RendererAPI::D3D12, m_Window);
+        m_Renderer->InitTest();
+        
     }
 
     Application::~Application()
@@ -23,7 +25,6 @@ namespace Wizard {
     {
         WZ_ENGINE_INFO("run");
         while (!m_Window->WindowShouldClose()) {
-            
             OnUpdate();
         }
         
@@ -32,13 +33,14 @@ namespace Wizard {
     void Application::OnUpdate()
     {
         m_Window->OnUpdate();
+        m_Renderer->Render();
+        m_Renderer->Present();
     }
 
     void Application::OnEvent(Event& e) 
     {
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<WindowClosedEvent>(BIND_FN_EVENT(Application::OnWindowClosed));
-        
     }
 
     bool Application::OnWindowClosed(WindowClosedEvent& e)

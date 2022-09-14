@@ -3,6 +3,7 @@ project(Engine)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # build types
 if(NOT CMAKE_BUILD_TYPE)
@@ -26,9 +27,12 @@ elseif(UNIX AND NOT APPLE)
     add_definitions(-DWZ_LINUX)
 endif()
 
-#source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR})
+# Assets
+set(ASSETS 
+    assets
+    src
+)
 
-find_package(Vulkan REQUIRED)
 # All Files
 set(ALL_FILES 
     src/Core.h
@@ -49,26 +53,21 @@ set(ALL_FILES
     src/Renderer/Shader.cpp
     src/Renderer/Renderer.h
     src/Renderer/Renderer.cpp
-    src/Renderer/VulkanRenderer.h
-    src/Renderer/VulkanRenderer.cpp
-    src/Renderer/VulkanShader.h
-    src/Renderer/VulkanShader.cpp
 )
 
 # Include Directories
 set(INCLUDE_DIRS 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Core 
-    ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty 
-    ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/spdlog/include 
-    ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glfw/include
-    Vulkan::Vulkan
+    src
+    src/Core 
+    thirdparty/DiligentCore
+    thirdparty/spdlog/include 
+    thirdparty/glfw/include
 )
 
 # Libs
 set(LINK_LIBS 
-    glfw 
-    Vulkan::Vulkan
+    Diligent-Common 
+    glfw
 )
 
 # glfw: prevent glfw to build test or docmentation
@@ -77,13 +76,37 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 #
 
-
 add_library(Engine ${ALL_FILES})
 add_subdirectory(thirdparty/DiligentCore)
 add_subdirectory(thirdparty/glfw)
 
+# Diligent
+if(D3D11_SUPPORTED)
+    target_link_libraries(Engine PRIVATE Diligent-GraphicsEngineD3D11-shared)
+    add_definitions(-DWZ_D3D11)
+endif()
+if(D3D12_SUPPORTED)
+    target_link_libraries(Engine PRIVATE Diligent-GraphicsEngineD3D12-shared)
+    add_definitions(-DWZ_D3D12)
+endif()
+if(GL_SUPPORTED)
+    target_link_libraries(Engine PRIVATE Diligent-GraphicsEngineOpenGL-shared)
+    add_definitions(-DWZ_GL)
+endif()
+if(VULKAN_SUPPORTED)
+    target_link_libraries(Engine PRIVATE Diligent-GraphicsEngineVk-shared)
+    add_definitions(-DWZ_VULKAN)
+endif()
+if(METAL_SUPPORTED)
+    target_link_libraries(Engine PRIVATE Diligent-GraphicsEngineMetal-shared)
+    add_definitions(-DWZ_METAL)
+endif()
+
+if(PLATFORM_WIN32)
+    copy_required_dlls(Engine)
+endif()
+
+target_compile_definitions(Engine PRIVATE ENGINE_DLL=1)
 target_precompile_headers(Engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/wzpch.h)
 target_include_directories(Engine PUBLIC ${INCLUDE_DIRS})
 target_link_libraries(Engine PUBLIC ${LINK_LIBS})
-
-

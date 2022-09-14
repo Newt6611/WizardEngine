@@ -44,14 +44,14 @@ namespace Wizard
         
         
     private:
-        GLFWwindow* m_Window;
-        bool m_WindowShouldClose;
+        GLFWwindow* m_Window = nullptr;
+        bool m_WindowShouldClose = false;
 
         struct WindowData
         {   
-            const char* Title;
-            uint32_t Width;
-            uint32_t Height;
+            const char* Title = "";
+            uint32_t Width = 0;
+            uint32_t Height = 0;
             std::function<void(Wizard::Event&)> EventCallback;
         };
 
