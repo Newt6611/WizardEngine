@@ -11,9 +11,18 @@ namespace Wizard {
         m_Window->SetEventCallback(BIND_FN_EVENT(Application::OnEvent));
 
         m_Renderer = std::make_unique<Renderer>();
+
+#ifdef WZ_WINDOWS
         m_Renderer->Init(RendererAPI::D3D12, m_Window);
+#endif
+#ifdef WZ_APPLE
+        m_Renderer->Init(RendererAPI::Metal, m_Window);
+#endif
+#ifdef WZ_LINUX
+        m_Renderer->Init(RendererAPI::Vulkan, m_Window);
+#endif
+
         m_Renderer->InitTest();
-        
     }
 
     Application::~Application()

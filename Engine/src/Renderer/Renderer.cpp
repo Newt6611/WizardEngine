@@ -3,7 +3,6 @@
 #include "Core/Window.h"
 #include "GLFW/glfw3native.h"
 
-
 namespace Wizard
 {
     void Renderer::Init(RendererAPI api, Window* window)
@@ -15,10 +14,10 @@ namespace Wizard
 #endif
 #if PLATFORM_LINUX
         LinuxNativeWindow Window;
-        Window.WindowId = glfwGetX11Window(m_Window);
+        Window.WindowId = glfwGetX11Window(window->GetWindow());
         Window.pDisplay = glfwGetX11Display();
-        if (DevType == RENDER_DEVICE_TYPE_GL)
-            glfwMakeContextCurrent(m_Window);
+        if (m_Api == RendererAPI::OpenGL)
+            glfwMakeContextCurrent(window->GetWindow());
 #endif
 #if PLATFORM_MACOS
         MacOSNativeWindow Window;

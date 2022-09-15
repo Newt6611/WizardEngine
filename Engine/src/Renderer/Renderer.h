@@ -2,9 +2,9 @@
 #include "wzpch.h"
 #include "Core.h"
 
-#define PLATFORM_WIN32 1
-
 #ifdef WZ_WINDOWS
+    #define GLFW_EXPOSE_NATIVE_WIN32
+    #define PLATFORM_WIN32 1
     #ifdef WZ_D3D11
         #include "Graphics/GraphicsEngineD3D11/interface/EngineFactoryD3D11.h"
     #endif
@@ -17,9 +17,18 @@
 #endif
 
 #ifdef WZ_APPLE
+    #define PLATFORM_MACOS 1
     #ifdef WZ_METAL
         #include "Graphics/GraphicsEngineMetal/interface/EngineFactoryMtl.h"
     #endif
+    #ifdef WZ_VULKAN
+        #include "Graphics/GraphicsEngineVulkan/interface/EngineFactoryVk.h"
+    #endif
+#endif
+
+#ifdef WZ_LINUX
+    #define PLATFORM_LINUX 1
+    #define GLFW_EXPOSE_NATIVE_X11
     #ifdef WZ_VULKAN
         #include "Graphics/GraphicsEngineVulkan/interface/EngineFactoryVk.h"
     #endif
@@ -40,7 +49,8 @@ namespace Wizard {
         Vulkan = (1 << 1),
         D3D11 = (1 << 2),
         D3D12 = (1 << 3),
-        OpenGL = (1 << 4)
+        OpenGL = (1 << 4),
+        Metal = (1 << 5)
     };
 
     class Renderer
