@@ -178,11 +178,12 @@ namespace Wizard
         PSOCreateInfo.GraphicsPipeline.DSVFormat = m_SwapChain->GetDesc().DepthBufferFormat;
         PSOCreateInfo.GraphicsPipeline.PrimitiveTopology = PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
         PSOCreateInfo.GraphicsPipeline.RasterizerDesc.CullMode = CULL_MODE_NONE;
+        PSOCreateInfo.GraphicsPipeline.RasterizerDesc.FillMode = FILL_MODE_SOLID;
         PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthEnable = False;
 
         ShaderCreateInfo ShaderCI;
         ShaderCI.SourceLanguage = SHADER_SOURCE_LANGUAGE_HLSL;
-        //ShaderCI.UseCombinedTextureSamplers = true;
+        ShaderCI.UseCombinedTextureSamplers = true;
         RefCntAutoPtr<IShader> pVS;
         {
             ShaderCI.Desc.ShaderType = SHADER_TYPE_VERTEX;
