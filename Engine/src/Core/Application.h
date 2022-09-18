@@ -6,6 +6,7 @@
 #include "Core.h"
 #include "Window.h"
 #include "Renderer/Renderer.h"
+#include "LayerStack.h"
 
 namespace Wizard {
     class Application 
@@ -20,11 +21,13 @@ namespace Wizard {
         void OnUpdate();
         void OnEvent(Event& e);
 
-
         bool OnWindowClosed(WindowClosedEvent& e);
+
+        void PushLayer(Layer* layer);
 
     private:
         Window* m_Window;
         Renderer* m_Renderer;
+        LayerStack m_LayerStack;
     };
 }

@@ -22,8 +22,6 @@ namespace Wizard {
 #ifdef WZ_LINUX
         m_Renderer->Init(RendererAPI::Vulkan, m_Window);
 #endif
-
-        m_Renderer->InitTest();
     }
 
     Application::~Application()
@@ -35,16 +33,21 @@ namespace Wizard {
     {
         WZ_ENGINE_INFO("run");
         while (!m_Window->WindowShouldClose()) {
+            
+
+            for (Layer* layer : m_LayerStack) {
+                layer->OnUpdate();
+            }
+            
             OnUpdate();
         }
-        
     }
 
     void Application::OnUpdate()
     {
         m_Window->OnUpdate();
-        m_Renderer->Update();
-        m_Renderer->Render();
+        // m_Renderer->Update();
+        // m_Renderer->Render();
         m_Renderer->Present();
     }
 
@@ -52,12 +55,24 @@ namespace Wizard {
     {
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<WindowClosedEvent>(BIND_FN_EVENT(Application::OnWindowClosed));
+
+        for (std::vector<Layer*>::reverse_iterator it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it) {
+            (*it)->OnEvent(e);
+            if (e.Handled) 
+                break;
+        }
     }
 
     bool Application::OnWindowClosed(WindowClosedEvent& e)
     {
         WZ_ENGINE_INFO("WindowClosed");
         return true;
+    }
+
+    void Application::PushLayer(Layer* layer) 
+    {
+        m_LayerStack.PushLayer(layer);
+        layer->OnEnter();
     }
 }
 

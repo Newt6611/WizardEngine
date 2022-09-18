@@ -46,6 +46,7 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include "RenderPipelineState.h"
 #include "Shader.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
@@ -111,14 +112,6 @@ namespace Wizard {
             return std::make_shared<ConstantBuffer<T>>(name, m_Device);
         }
 
-        void InitTest();
-        void CreateVertexBuffer();
-        void CreateIndexBuffer();
-        void LoadTexture();
-        void Update();
-
-
-        void Render();
         void Present();
 
     private:
@@ -130,11 +123,11 @@ namespace Wizard {
         RefCntAutoPtr<IDeviceContext> m_DeviceContext;
         RefCntAutoPtr<ISwapChain> m_SwapChain;
 
-        RefCntAutoPtr<IPipelineState> m_PipelineState;
         RefCntAutoPtr<IShaderResourceBinding> m_SRB;
         RefCntAutoPtr<ITextureView> m_TextureSRV;
         
         
+        std::shared_ptr<RenderPipelineState> m_PipelineState;
         std::shared_ptr<VertexBuffer> m_VertexBuffer;
         std::shared_ptr<IndexBuffer> m_IndexBuffer;
         std::shared_ptr<ConstantBuffer<glm::mat4>> m_ConstantBuffer;

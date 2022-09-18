@@ -81,6 +81,13 @@
         "xtr1common": "cpp",
         "xtree": "cpp",
         "xutility": "cpp",
-        "bitset": "cpp"
+        "bitset": "cpp",
+        "any": "cpp",
+        "cinttypes": "cpp",
+        "csignal": "cpp",
+        "filesystem": "cpp",
+        "queue": "cpp",
+        "typeindex": "cpp",
+        "valarray": "cpp"
     }
 }

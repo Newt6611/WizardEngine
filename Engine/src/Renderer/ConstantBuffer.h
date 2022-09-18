@@ -23,7 +23,7 @@ namespace Wizard {
 
         ~ConstantBuffer() {}
 
-        IBuffer* GetConstantBuffer() { return m_ConstantBuffer; }
+        IBuffer* GetBuffer() { return m_ConstantBuffer; }
 
     private:
         RefCntAutoPtr<IBuffer> m_ConstantBuffer;

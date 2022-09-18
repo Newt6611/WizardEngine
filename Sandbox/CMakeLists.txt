@@ -13,7 +13,11 @@ elseif(UNIX AND NOT APPLE)
     add_definitions(-DWZ_LINUX)
 endif()
 
-add_executable(Sandbox src/Sandbox.cpp)
+set(SOURCE_DIRS 
+    src/Example2D.cpp
+)
+
+add_executable(Sandbox src/Sandbox.cpp ${SOURCE_DIRS})
 target_include_directories(Sandbox PRIVATE ${CMAKE_SOURCE_DIR}/Engine/src)
 
 target_link_libraries(Sandbox Engine)

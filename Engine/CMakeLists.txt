@@ -49,6 +49,7 @@ set(SOURCE_DIRS
     src/Core/Application.cpp
     src/Core/Log.cpp
     src/Core/Window.cpp
+    src/Core/LayerStack.cpp
 
     # Renderer
     src/Renderer/Shader.cpp

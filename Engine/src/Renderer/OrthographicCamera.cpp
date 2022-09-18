@@ -8,6 +8,11 @@ namespace Wizard {
 
     }
 
+    OrthographicCamera::~OrthographicCamera()
+    {
+
+    }
+
     void OrthographicCamera::ReCalculate()
     {
         glm::mat4 transform = glm::translate(glm::mat4(1.0), m_Position) * 

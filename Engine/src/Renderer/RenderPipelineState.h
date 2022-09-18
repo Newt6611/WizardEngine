@@ -1,19 +1,25 @@
 #pragma once
-
-#include "Renderer.h"
+#include "Common/interface/RefCntAutoPtr.hpp"
+#include "Graphics/GraphicsEngine/interface/PipelineState.h"
 
 namespace Wizard {
+	using namespace Diligent;
+
 	class RenderPipelineState
 	{
 	public:
-		RenderPipelineState();
+		RenderPipelineState(const std::string& name);
 		~RenderPipelineState();
-		virtual void Init(const char* state_name);
 
-		inline const IPipelineState* GetPipelineState() { return m_PipelineState; }
+		void Generate();
 
+		inline IPipelineState* GetPipelineState() { return m_PipelineState; }
+
+	public:
+		GraphicsPipelineStateCreateInfo createInfo;
+		
 	protected:
+		bool m_Generated = false;
 		RefCntAutoPtr<IPipelineState> m_PipelineState;
-		ISwapChain* swapchain;
 	};
 }
