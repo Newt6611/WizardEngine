@@ -7,3 +7,9 @@
 [submodule "Engine/thirdparty/DiligentCore"]
 	path = Engine/thirdparty/DiligentCore
 	url = https://github.com/DiligentGraphics/DiligentCore.git
+[submodule "Engine/thirdparty/DiligentTools"]
+	path = Engine/thirdparty/DiligentTools
+	url = https://github.com/DiligentGraphics/DiligentTools
+[submodule "Engine/thirdparty/glm"]
+	path = Engine/thirdparty/glm
+	url = https://github.com/g-truc/glm

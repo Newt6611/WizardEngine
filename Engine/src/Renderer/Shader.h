@@ -1,14 +1,25 @@
 #pragma once
-#include "wzpch.h"
+#include "Graphics/GraphicsEngine/interface/EngineFactory.h"
+#include "Graphics/GraphicsEngine/interface/RenderDevice.h"
+#include "Graphics/GraphicsEngine/interface/Shader.h"
+#include "Common/interface/RefCntAutoPtr.hpp"
+
 
 namespace Wizard {
+    using namespace Diligent;    
+
     class Shader
     {
     public:
-        static std::unique_ptr<Shader> Create();
-        Shader() {}
+        Shader(const std::string& name, const char* file_path_v, const char* file_path_p, 
+            IRenderDevice* device, IEngineFactory* engineFactory);
         virtual ~Shader() {}
 
-        static std::vector<char> ReadByteCode(const std::string& fileName);
+        inline IShader* GetVertexShader() { return m_VertexShader; }
+        inline IShader* GetPixelShader() { return m_PixelShader; }
+
+    private:
+        RefCntAutoPtr<IShader> m_VertexShader;
+        RefCntAutoPtr<IShader> m_PixelShader;
     };
 }

@@ -25,49 +25,57 @@ elseif(APPLE)
     add_definitions(-DWZ_APPLE)
 elseif(UNIX AND NOT APPLE)
     add_definitions(-DWZ_LINUX)
+    find_package(Threads)
 endif()
 
+
 # Assets
-set(ASSETS 
-    assets
-    src
+set(ASSETS_SHADERS
+    assets/shaders/cube.ps
+    assets/shaders/cube.vs
 )
 
-# All Files
-set(ALL_FILES 
-    src/Core.h
-    src/EntryPoint.h
-    src/Wizard.h
-    src/wzpch.h
+set(ASSETS_TEXTURES
+    assets/textures/DGLogo.png
+)
 
+set(ASSETS ${ASSETS_SHADERS} ${ASSETS_TEXTURES})
+#
+
+
+# Source Files
+set(SOURCE_DIRS 
     # Core
-    src/Core/Application.h
     src/Core/Application.cpp
-    src/Core/Log.h
     src/Core/Log.cpp
-    src/Core/Window.h
     src/Core/Window.cpp
 
     # Renderer
-    src/Renderer/Shader.h
     src/Renderer/Shader.cpp
-    src/Renderer/Renderer.h
     src/Renderer/Renderer.cpp
+    src/Renderer/RenderPipelineState.cpp
+    src/Renderer/VertexBuffer.cpp
+    src/Renderer/IndexBuffer.cpp
+    src/Renderer/OrthographicCamera.cpp
 )
 
 # Include Directories
-set(INCLUDE_DIRS 
+set(INCLUDE_DIRS
     src
     src/Core 
     thirdparty/DiligentCore
+    thirdparty/DiligentTools
     thirdparty/spdlog/include 
     thirdparty/glfw/include
+    thirdparty/glm
 )
 
 # Libs
 set(LINK_LIBS 
     Diligent-Common 
-    glfw
+    Diligent-GraphicsTools 
+    Diligent-TextureLoader 
+    glfw 
 )
 
 # glfw: prevent glfw to build test or docmentation
@@ -76,8 +84,9 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 #
 
-add_library(Engine ${ALL_FILES})
+add_library(Engine ${SOURCE_DIRS})
 add_subdirectory(thirdparty/DiligentCore)
+add_subdirectory(thirdparty/DiligentTools)
 add_subdirectory(thirdparty/glfw)
 
 # Diligent
@@ -110,3 +119,10 @@ target_compile_definitions(Engine PRIVATE ENGINE_DLL=1)
 target_precompile_headers(Engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/wzpch.h)
 target_include_directories(Engine PUBLIC ${INCLUDE_DIRS})
 target_link_libraries(Engine PUBLIC ${LINK_LIBS})
+
+if(PLATFORM_WIN32)
+    #set_target_properties(Engine PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/assets")
+    target_sources(Engine PRIVATE ${ASSETS})
+    source_group("assets/shaders" FILES ${ASSETS_SHADERS})
+    source_group("assets/textures" FILES ${ASSETS_TEXTURES})
+endif()

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "wzpch.h"
+
 #include "spdlog/spdlog.h"
 
 

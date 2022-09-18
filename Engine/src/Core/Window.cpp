@@ -1,3 +1,4 @@
+#include "wzpch.h"
 #include "Window.h"
 #include "Log.h"
 

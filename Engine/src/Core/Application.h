@@ -1,5 +1,5 @@
 #pragma once
-#include "wzpch.h"
+
 #include "Log.h"
 #include "Events/Event.h"
 #include "Events/ApplicationEvents.h"
@@ -25,6 +25,6 @@ namespace Wizard {
 
     private:
         Window* m_Window;
-        std::unique_ptr<Renderer> m_Renderer;
+        Renderer* m_Renderer;
     };
 }

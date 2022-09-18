@@ -1,5 +1,4 @@
 #pragma once
-#include "wzpch.h"
 
 namespace Wizard
 {

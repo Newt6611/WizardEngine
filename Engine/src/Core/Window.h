@@ -1,5 +1,5 @@
 #pragma once
-#include "wzpch.h"
+
 #include "Events/Event.h"
 #include "Events/ApplicationEvents.h"
 #include "Events/MouseEvents.h"

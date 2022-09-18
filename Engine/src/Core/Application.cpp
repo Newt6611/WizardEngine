@@ -1,3 +1,4 @@
+#include "wzpch.h"
 #include "Application.h"
 
 namespace Wizard {
@@ -10,7 +11,7 @@ namespace Wizard {
         m_Window->Init(800, 600);
         m_Window->SetEventCallback(BIND_FN_EVENT(Application::OnEvent));
 
-        m_Renderer = std::make_unique<Renderer>();
+        m_Renderer = Renderer::Get();
 
 #ifdef WZ_WINDOWS
         m_Renderer->Init(RendererAPI::D3D12, m_Window);
@@ -27,7 +28,7 @@ namespace Wizard {
 
     Application::~Application()
     {
-        
+
     } 
 
     void Application::Run()
@@ -42,6 +43,7 @@ namespace Wizard {
     void Application::OnUpdate()
     {
         m_Window->OnUpdate();
+        m_Renderer->Update();
         m_Renderer->Render();
         m_Renderer->Present();
     }
