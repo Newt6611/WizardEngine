@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Engine/thirdparty/DiligentCore" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Engine/thirdparty/DiligentCore/ThirdParty/SPIRV-Cross" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Engine/thirdparty/DiligentCore/ThirdParty/SPIRV-Headers" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Engine/thirdparty/DiligentCore/ThirdParty/SPIRV-Tools" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Engine/thirdparty/DiligentCore/ThirdParty/Vulkan-Headers" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Engine/thirdparty/DiligentCore/ThirdParty/glslang" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Engine/thirdparty/DiligentCore/ThirdParty/googletest" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Engine/thirdparty/DiligentCore/ThirdParty/volk" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Engine/thirdparty/DiligentCore/ThirdParty/xxHash" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Engine/thirdparty/DiligentTools" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Engine/thirdparty/DiligentTools/ThirdParty/args" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Engine/thirdparty/DiligentTools/ThirdParty/imgui" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Engine/thirdparty/glfw" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Engine/thirdparty/glm" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Engine/thirdparty/spdlog" vcs="Git" />
+  </component>
+</project>

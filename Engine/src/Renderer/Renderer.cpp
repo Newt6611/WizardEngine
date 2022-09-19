@@ -3,13 +3,7 @@
 #include "Core/Log.h"
 #include "Core/Window.h"
 #include "GLFW/glfw3native.h"
-
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "Shader.h"
-
-#include "RenderTool.h"
-
+#include "Renderer2D.h"
 
 namespace Wizard
 {
@@ -115,10 +109,25 @@ namespace Wizard
         if (m_Device == nullptr || m_DeviceContext == nullptr || m_SwapChain == nullptr)
             WZ_ENGINE_ERROR("Device or deviceContext or swapchain null");
 
+
+        // Init Renderer2D
+        Renderer2D::Init();
+
+    }
+
+    void Renderer::Shutdown()
+    {
+        Renderer2D::Shutdown();
     }
 
     void Renderer::Present()
     {
         m_SwapChain->Present();
+    }
+
+    void Renderer::OnResize(int width, int height)
+    {
+        WZ_ENGINE_TRACE("Resize {} {}", width, height);
+        m_SwapChain->Resize((Uint32)width, (Uint32)height);
     }
 }

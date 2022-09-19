@@ -54,10 +54,14 @@ set(SOURCE_DIRS
     # Renderer
     src/Renderer/Shader.cpp
     src/Renderer/Renderer.cpp
+    src/Renderer/Renderer2D.cpp
     src/Renderer/RenderPipelineState.cpp
-    src/Renderer/VertexBuffer.cpp
-    src/Renderer/IndexBuffer.cpp
+    src/Renderer/Buffer.cpp
     src/Renderer/OrthographicCamera.cpp
+    src/Renderer/OrthographicCameraController.cpp
+
+    # Platform
+    src/Platform/WindowsInput.cpp
 )
 
 # Include Directories
@@ -120,10 +124,3 @@ target_compile_definitions(Engine PRIVATE ENGINE_DLL=1)
 target_precompile_headers(Engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/wzpch.h)
 target_include_directories(Engine PUBLIC ${INCLUDE_DIRS})
 target_link_libraries(Engine PUBLIC ${LINK_LIBS})
-
-if(PLATFORM_WIN32)
-    #set_target_properties(Engine PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/assets")
-    target_sources(Engine PRIVATE ${ASSETS})
-    source_group("assets/shaders" FILES ${ASSETS_SHADERS})
-    source_group("assets/textures" FILES ${ASSETS_TEXTURES})
-endif()

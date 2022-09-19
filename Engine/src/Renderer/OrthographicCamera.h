@@ -1,3 +1,4 @@
+#pragma once
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -8,14 +9,14 @@ namespace Wizard {
         OrthographicCamera(float left, float right, float bottom, float top);
         ~OrthographicCamera();
 
-
+        void SetProjection(float left, float right, float bottom, float top);
         void SetPosition(const glm::vec3& position) { m_Position = position; ReCalculate(); }
-        void SetRotation(float r) { m_Rotation = r; }
+        void SetRotation(float r) { m_Rotation = r; ReCalculate(); }
 
-        inline const glm::mat4& GetViewMatrix() { return m_View; ReCalculate(); }
-        inline const glm::mat4& GetProjectionMatrix() { return m_Projection; }
-        inline const glm::mat4& GetViewProjectionMatrix() { return m_Projection * m_View; }
-        inline const glm::vec3& GetPosition() { return m_Position; }
+        inline const glm::mat4& GetViewMatrix() const { return m_View;}
+        inline const glm::mat4& GetProjectionMatrix() const { return m_Projection; }
+        inline const glm::mat4& GetViewProjectionMatrix() const { return m_Projection * m_View; }
+        inline const glm::vec3& GetPosition() const { return m_Position; }
         inline float GetRotation() { return m_Rotation; }
 
     private:

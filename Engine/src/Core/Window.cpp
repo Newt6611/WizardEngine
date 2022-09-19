@@ -16,7 +16,7 @@ namespace Wizard
         }
 
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         m_Window = glfwCreateWindow(m_Data.Width, m_Data.Height, m_Data.Title, NULL, NULL);
         if (!m_Window) {
@@ -24,7 +24,6 @@ namespace Wizard
             WZ_ENGINE_ERROR("Create GLFW Window Failed");
             return;
         }
-
         glfwMakeContextCurrent(m_Window);
         glfwSetWindowUserPointer(m_Window, &m_Data);
 
@@ -61,6 +60,13 @@ namespace Wizard
         glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods) {
             WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
             MouseButtonClick e(button, action);
+            data.EventCallback(e);
+        });
+
+        // mouse scroll
+        glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xoffset, double yoffset) {
+            WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+            MouseScrolledEvent e(xoffset, yoffset);
             data.EventCallback(e);
         });
     }

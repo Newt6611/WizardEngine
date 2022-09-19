@@ -1,6 +1,7 @@
 struct PSInput 
 { 
-    float4 Pos : SV_POSITION; 
+    float4 Pos : SV_POSITION;
+    float2 UV  : UV;
 };
 
 struct PSOutput

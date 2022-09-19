@@ -8,7 +8,7 @@ namespace Wizard {
         WZ_ENGINE_INFO("Wizard Start");
 
         m_Window = Window::Get();
-        m_Window->Init(800, 600);
+        m_Window->Init(1280, 720);
         m_Window->SetEventCallback(BIND_FN_EVENT(Application::OnEvent));
 
         m_Renderer = Renderer::Get();
@@ -26,28 +26,28 @@ namespace Wizard {
 
     Application::~Application()
     {
-
+        m_Renderer->Shutdown();
     } 
 
     void Application::Run()
     {
         WZ_ENGINE_INFO("run");
         while (!m_Window->WindowShouldClose()) {
+            float time = glfwGetTime();
+            float ts = time - m_LastTimeFrame;
+            m_LastTimeFrame = time;
             
-
             for (Layer* layer : m_LayerStack) {
-                layer->OnUpdate();
+                layer->OnUpdate(ts);
             }
             
-            OnUpdate();
+            OnUpdate(ts);
         }
     }
 
-    void Application::OnUpdate()
+    void Application::OnUpdate(float ts)
     {
         m_Window->OnUpdate();
-        // m_Renderer->Update();
-        // m_Renderer->Render();
         m_Renderer->Present();
     }
 
@@ -55,6 +55,7 @@ namespace Wizard {
     {
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<WindowClosedEvent>(BIND_FN_EVENT(Application::OnWindowClosed));
+        dispatcher.Dispatch<WindowResizeEvent>(BIND_FN_EVENT(Application::OnWindowResize));
 
         for (std::vector<Layer*>::reverse_iterator it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it) {
             (*it)->OnEvent(e);
@@ -66,6 +67,12 @@ namespace Wizard {
     bool Application::OnWindowClosed(WindowClosedEvent& e)
     {
         WZ_ENGINE_INFO("WindowClosed");
+        return true;
+    }
+
+    bool Application::OnWindowResize(WindowResizeEvent& e)
+    {
+        m_Renderer->OnResize(e.GetWidth(), e.GetHeight());
         return true;
     }
 

@@ -17,3 +17,5 @@
 
 #include <functional>
 #include <optional>
+
+#include <stdint.h>

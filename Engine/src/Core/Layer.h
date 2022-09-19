@@ -13,7 +13,7 @@ namespace Wizard {
         virtual void OnEnter() {}
         virtual void OnLeave() {}
 
-        virtual void OnUpdate() {}
+        virtual void OnUpdate(float ts) {}
         virtual void OnEvent(Event& e) {}
 
     protected:

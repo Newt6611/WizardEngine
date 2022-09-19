@@ -15,7 +15,7 @@ namespace Wizard {
         createInfo.GraphicsPipeline.RTVFormats[0] = swapchain->GetDesc().ColorBufferFormat;
         createInfo.GraphicsPipeline.DSVFormat = swapchain->GetDesc().DepthBufferFormat;
         createInfo.GraphicsPipeline.PrimitiveTopology = PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-        createInfo.GraphicsPipeline.RasterizerDesc.CullMode = CULL_MODE_NONE;
+        createInfo.GraphicsPipeline.RasterizerDesc.CullMode = CULL_MODE_BACK;
         createInfo.GraphicsPipeline.RasterizerDesc.FillMode = FILL_MODE_SOLID;
 
         createInfo.PSODesc.ResourceLayout.DefaultVariableType = SHADER_RESOURCE_VARIABLE_TYPE_STATIC;

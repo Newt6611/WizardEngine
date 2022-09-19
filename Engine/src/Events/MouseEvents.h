@@ -1,6 +1,6 @@
 #pragma once
 #include "Event.h"
-
+#include <string>
 
 namespace Wizard 
 {
@@ -83,4 +83,31 @@ namespace Wizard
         int m_Button;
         int m_Action;
     };
+
+    class MouseScrolledEvent : public Event
+	{
+	public:
+		MouseScrolledEvent(const float xOffset, const float yOffset)
+			: m_XOffset(xOffset), m_YOffset(yOffset) {}
+
+		float GetXOffset() const { return m_XOffset; }
+		float GetYOffset() const { return m_YOffset; }
+
+        static EventType GetStaticEventType() {
+            return EventType::MouseScrolled;
+        }
+
+        EventType GetEventType() override {
+            return EventType::MouseScrolled;
+        }
+
+        std::string GetDebugName() override {
+            std::string s = "Offset: " + std::to_string(m_XOffset) + ", " + std::to_string(m_YOffset);
+            return s;
+        }
+
+	private:
+		float m_XOffset, m_YOffset;
+	};
+
 }

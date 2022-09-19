@@ -18,10 +18,11 @@ namespace Wizard {
         void Run();
 
     protected:
-        void OnUpdate();
+        void OnUpdate(float delta);
         void OnEvent(Event& e);
 
         bool OnWindowClosed(WindowClosedEvent& e);
+        bool OnWindowResize(WindowResizeEvent& e);
 
         void PushLayer(Layer* layer);
 
@@ -29,5 +30,7 @@ namespace Wizard {
         Window* m_Window;
         Renderer* m_Renderer;
         LayerStack m_LayerStack;
+
+        float m_LastTimeFrame;
     };
 }

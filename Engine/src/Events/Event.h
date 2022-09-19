@@ -1,11 +1,13 @@
 #pragma once
 
+#include <functional>
+
 namespace Wizard
 {
     enum class EventType {
         None = 0,
         WindowResize, WindowClose, WindowPosition,
-        MousePosition, MouseButtonClick
+        MousePosition, MouseButtonClick, MouseScrolled
     };
 
     class Event

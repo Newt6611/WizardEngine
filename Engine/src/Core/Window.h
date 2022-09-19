@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Events/Event.h"
 #include "Events/ApplicationEvents.h"
 #include "Events/MouseEvents.h"
@@ -30,6 +29,8 @@ namespace Wizard
             return m_Window;
         }
 
+        inline void* GetNativeWindow() { return m_Window; }
+
         void OnUpdate();
 
         inline bool WindowShouldClose() {
@@ -39,8 +40,6 @@ namespace Wizard
         void SetEventCallback(const std::function<void(Event&)>& e) {
             m_Data.EventCallback = e;
         }
-
-    private:
         
         
     private:

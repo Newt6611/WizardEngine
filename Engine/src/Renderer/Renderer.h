@@ -48,8 +48,7 @@
 
 #include "RenderPipelineState.h"
 #include "Shader.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
+#include "Buffer.h"
 #include "ConstantBuffer.h"
 
 using namespace Diligent;
@@ -80,6 +79,7 @@ namespace Wizard {
         virtual ~Renderer() { }
 
         void Init(RendererAPI api, Window* window);
+        void Shutdown();
 
         inline const RendererAPI GetAPI() { return m_Api; }
 
@@ -113,6 +113,8 @@ namespace Wizard {
         }
 
         void Present();
+
+        void OnResize(int width, int height);
 
     private:
         RendererAPI m_Api = RendererAPI::None;

@@ -1,4 +1,5 @@
 /build
 /buildvs
-.vs
 /out
+.vs
+./idea
