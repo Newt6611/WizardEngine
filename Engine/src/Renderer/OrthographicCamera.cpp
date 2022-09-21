@@ -3,7 +3,7 @@
 
 namespace Wizard {
     OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top)
-        : m_Projection(glm::orthoLH(left, right, bottom, top, -1.f, 1.f))
+        : m_Projection(glm::orthoLH_ZO(left, right, bottom, top, 0.0f, 1.f))
     {
 
     }
@@ -15,7 +15,8 @@ namespace Wizard {
 
     void OrthographicCamera::SetProjection(float left, float right, float bottom, float top)
 	{
-		m_Projection = glm::orthoLH(left, right, bottom, top, -1.0f, 1.0f);
+		m_Projection = glm::orthoLH_ZO(left, right, bottom, top, 0.0f, 1.0f);
+        ReCalculate();
 	}
 
     void OrthographicCamera::ReCalculate()

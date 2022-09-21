@@ -14,4 +14,5 @@ public:
 
 private:
     Wizard::OrthographicCameraController m_CameraController;
+    std::shared_ptr<Wizard::Texture> m_Texture;
 };

@@ -13,6 +13,10 @@
     #ifdef WZ_VULKAN
         #include "Graphics/GraphicsEngineVulkan/interface/EngineFactoryVk.h"
     #endif
+    #ifdef WZ_GL
+        #include "Graphics/GraphicsEngineOpenGL/interface/EngineFactoryOpenGL.h"
+    #endif
+
 #elif defined(WZ_APPLE)
     #define PLATFORM_MACOS 1
     #ifdef WZ_METAL
@@ -50,6 +54,7 @@
 #include "Shader.h"
 #include "Buffer.h"
 #include "ConstantBuffer.h"
+#include "Texture.h"
 
 using namespace Diligent;
 
@@ -85,6 +90,10 @@ namespace Wizard {
 
         inline const std::string& GetAPIName() { return m_ApiName; }
 
+        inline void ResetDrawCall() { m_DrawCall = 0; }
+        inline void AddOneDrawCall() { ++m_DrawCall; }
+        inline int GetDrawCall() { return m_DrawCall; } 
+
 
         inline IRenderDevice* GetDevice() { return m_Device; }
         inline IDeviceContext* GetDeviceContext() { return m_DeviceContext; }
@@ -94,6 +103,11 @@ namespace Wizard {
         std::shared_ptr<Shader> CreateShader(const std::string& name, const std::string& filepath_v, const std::string& filepath_p)
         {
             return std::make_shared<Shader>(name, filepath_v.c_str(), filepath_p.c_str(), m_Device, m_EngineFactory);
+        }
+
+        std::shared_ptr<VertexBuffer> CreateVertexBuffer(uint32_t size)
+        {
+            return std::make_shared<VertexBuffer>(size, m_Device);
         }
 
         std::shared_ptr<VertexBuffer> CreateVertexBuffer(void* data, uint32_t size, uint32_t vertice_count)
@@ -106,11 +120,18 @@ namespace Wizard {
             return std::make_shared<IndexBuffer>(indices, count, m_Device);
         }
 
+        std::shared_ptr<Texture> CreateTexture(const char* filepath, bool isRGB)
+        {
+            return std::make_shared<Texture>(filepath, isRGB, m_Device);
+        }
+
         template <typename T>
         std::shared_ptr<ConstantBuffer<T>> CreateConstantBuffer(const std::string& name)
         {
             return std::make_shared<ConstantBuffer<T>>(name, m_Device);
         }
+
+        
 
         void Present();
 
@@ -125,16 +146,6 @@ namespace Wizard {
         RefCntAutoPtr<IDeviceContext> m_DeviceContext;
         RefCntAutoPtr<ISwapChain> m_SwapChain;
 
-        RefCntAutoPtr<IShaderResourceBinding> m_SRB;
-        RefCntAutoPtr<ITextureView> m_TextureSRV;
-        
-        
-        std::shared_ptr<RenderPipelineState> m_PipelineState;
-        std::shared_ptr<VertexBuffer> m_VertexBuffer;
-        std::shared_ptr<IndexBuffer> m_IndexBuffer;
-        std::shared_ptr<ConstantBuffer<glm::mat4>> m_ConstantBuffer;
-
-
-        glm::mat4 m_WVP;
+        int m_DrawCall = 0;
     };
 }

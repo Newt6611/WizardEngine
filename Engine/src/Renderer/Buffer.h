@@ -11,6 +11,7 @@ namespace Wizard {
     class VertexBuffer
     {
     public:
+        VertexBuffer(uint32_t size, IRenderDevice* device);
         VertexBuffer(void* data, uint32_t size, uint32_t count, IRenderDevice* device);
 
         ~VertexBuffer();
@@ -22,7 +23,6 @@ namespace Wizard {
         RefCntAutoPtr<IBuffer> m_Buffer;
     };
 
-    using namespace Diligent;
     class IndexBuffer 
     {
     public:

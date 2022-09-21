@@ -17,6 +17,11 @@ namespace Wizard {
             return Renderer::Get()->CreateShader(name, filepath_v, filepath_p);
         }
 
+        static std::shared_ptr<VertexBuffer> CreateVertexBuffer(uint32_t size)
+        {
+            return Renderer::Get()->CreateVertexBuffer(size);
+        }
+
         static std::shared_ptr<VertexBuffer> CreateVertexBuffer(void* data, uint32_t size, uint32_t vertices_count)
         {
             return Renderer::Get()->CreateVertexBuffer(data, size, vertices_count);
@@ -25,6 +30,11 @@ namespace Wizard {
         static std::shared_ptr<IndexBuffer> CreateIndexBuffer(uint32_t* indices, int count)
         {
             return Renderer::Get()->CreateIndexBuffer(indices, count);
+        }
+
+        static std::shared_ptr<Texture> CreateTexture(const char* filepath, bool isRGB)
+        {
+            return Renderer::Get()->CreateTexture(filepath, isRGB);
         }
 
         template<typename T>
@@ -41,6 +51,21 @@ namespace Wizard {
         static ITextureView* GetDepthBufferDSV()
         {
             return Renderer::Get()->GetSwapChain()->GetDepthBufferDSV();
+        }
+
+        static int GetDrawCall()
+        {
+            return Renderer::Get()->GetDrawCall();
+        }
+
+        static void AddOneDrawCall()
+        {
+            Renderer::Get()->AddOneDrawCall();
+        }
+
+        static void ResetDrawCall()
+        {
+            Renderer::Get()->ResetDrawCall();
         }
     };
 }

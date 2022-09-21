@@ -4,11 +4,25 @@
 namespace Wizard {
 
     // Vertex Buffer
+    VertexBuffer::VertexBuffer(uint32_t size, IRenderDevice* device)
+    {
+        BufferDesc buffDesc;
+        buffDesc.Name      = "m Dynamic Vertex Buffer";
+        buffDesc.Usage     = USAGE_DEFAULT;
+        buffDesc.BindFlags = BIND_VERTEX_BUFFER;
+        buffDesc.Size      = size;
+
+        BufferData bufferData;
+        bufferData.pData = nullptr;
+        bufferData.DataSize = size;
+        device->CreateBuffer(buffDesc, &bufferData, &m_Buffer);
+    }
+
     VertexBuffer::VertexBuffer(void* data, uint32_t size, uint32_t vertice_count, IRenderDevice* device)
         : m_VerticeCount(vertice_count)
     {
         BufferDesc buffDesc;
-        buffDesc.Name      = "Vertex Buffer";
+        buffDesc.Name      = "m IMMUTABLE Vertex Buffer";
         buffDesc.Usage     = USAGE_IMMUTABLE;
         buffDesc.BindFlags = BIND_VERTEX_BUFFER;
         buffDesc.Size      = size;
@@ -23,8 +37,6 @@ namespace Wizard {
     {
 
     }
-
-
 
     // Index Buffer
     IndexBuffer::IndexBuffer(uint32_t* indices, int count, IRenderDevice* device) 

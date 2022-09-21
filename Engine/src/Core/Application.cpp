@@ -1,5 +1,7 @@
 #include "wzpch.h"
 #include "Application.h"
+#include "Renderer/RenderTool.h"
+#include "Renderer/RenderCommand.h"
 
 namespace Wizard {
     Application::Application()
@@ -8,13 +10,13 @@ namespace Wizard {
         WZ_ENGINE_INFO("Wizard Start");
 
         m_Window = Window::Get();
-        m_Window->Init(1280, 720);
+        m_Window->Init(1600, 900);
         m_Window->SetEventCallback(BIND_FN_EVENT(Application::OnEvent));
 
         m_Renderer = Renderer::Get();
 
 #ifdef WZ_WINDOWS
-        m_Renderer->Init(RendererAPI::D3D12, m_Window);
+        m_Renderer->Init(RendererAPI::D3D11, m_Window);
 #endif
 #ifdef WZ_APPLE
         m_Renderer->Init(RendererAPI::Metal, m_Window);
@@ -37,6 +39,8 @@ namespace Wizard {
             float ts = time - m_LastTimeFrame;
             m_LastTimeFrame = time;
             
+            RenderTool::ResetDrawCall();
+
             for (Layer* layer : m_LayerStack) {
                 layer->OnUpdate(ts);
             }
@@ -48,7 +52,7 @@ namespace Wizard {
     void Application::OnUpdate(float ts)
     {
         m_Window->OnUpdate();
-        m_Renderer->Present();
+        RenderCommand::Present();
     }
 
     void Application::OnEvent(Event& e) 

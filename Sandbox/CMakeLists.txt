@@ -24,5 +24,5 @@ target_include_directories(Sandbox PRIVATE ${CMAKE_SOURCE_DIR}/Engine/src)
 
 target_link_libraries(Sandbox Engine)
 if (WIN32)
-    set_target_properties(Sandbox PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/Engine/assets")
+    set_target_properties(Sandbox PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/assets")
 endif()

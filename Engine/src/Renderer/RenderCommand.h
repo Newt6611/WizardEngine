@@ -46,8 +46,28 @@ namespace Wizard {
 
         static void DrawIndexed(const Diligent::DrawIndexedAttribs &Attribs)
         {
+            Renderer::Get()->AddOneDrawCall();
             Renderer::Get()->GetDeviceContext()->DrawIndexed(Attribs);
         }
 
+        static void UpdateBuffer(IBuffer *pBuffer, Uint64 Offset, Uint64 Size, const void *pData, RESOURCE_STATE_TRANSITION_MODE StateTransitionMode = RESOURCE_STATE_TRANSITION_MODE_TRANSITION)
+        {
+            Renderer::Get()->GetDeviceContext()->UpdateBuffer(pBuffer, Offset, Size, pData, StateTransitionMode);
+        }
+
+        static void MapBuffer(IBuffer *pBuffer, MAP_TYPE MapType, MAP_FLAGS MapFlags, PVoid &pMappedData)
+        {
+            Renderer::Get()->GetDeviceContext()->MapBuffer(pBuffer, MapType, MapFlags, pMappedData);
+        }
+
+        static void UpmappBuffer(IBuffer *pBuffer, MAP_TYPE MapType)
+        {
+            Renderer::Get()->GetDeviceContext()->UnmapBuffer(pBuffer, MapType);
+        }
+
+        static void Present()
+        {
+            Renderer::Get()->Present();
+        }
     };
 }

@@ -69,6 +69,22 @@ namespace Wizard
         break;
 #endif
 
+#if WZ_GL
+        case RendererAPI::OpenGL:
+        {
+#    if EXPLICITLY_LOAD_ENGINE_GL_DLL
+            // Load the dll and import GetEngineFactoryOpenGL() function
+            auto GetEngineFactoryOpenGL = LoadGraphicsEngineOpenGL();
+#    endif
+            m_EngineFactory = GetEngineFactoryOpenGL();
+            IEngineFactoryOpenGL* pFactoryOpenGL = dynamic_cast<IEngineFactoryOpenGL*>(&(*m_EngineFactory));
+            EngineGLCreateInfo EngineCI;
+            EngineCI.Window = Window;
+            pFactoryOpenGL->CreateDeviceAndSwapChainGL(EngineCI, &m_Device, &m_DeviceContext, SCDesc, &m_SwapChain);
+        }
+        break;
+#endif // GL_SUPPORTED
+
 
 #if WZ_VULKAN
         case RendererAPI::Vulkan:

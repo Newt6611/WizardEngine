@@ -23,7 +23,7 @@ namespace Wizard {
         void ReCalculate();
 
     private:
-        glm::vec3 m_Position;
+        glm::vec3 m_Position = glm::vec3(0, 0, 0);
         float m_Rotation = 0.f;
         glm::mat4 m_View = glm::mat4(1.0);
         glm::mat4 m_Projection = glm::mat4(1.0);

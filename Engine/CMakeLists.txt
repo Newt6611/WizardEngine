@@ -57,6 +57,7 @@ set(SOURCE_DIRS
     src/Renderer/Renderer2D.cpp
     src/Renderer/RenderPipelineState.cpp
     src/Renderer/Buffer.cpp
+    src/Renderer/Texture.cpp
     src/Renderer/OrthographicCamera.cpp
     src/Renderer/OrthographicCameraController.cpp
 

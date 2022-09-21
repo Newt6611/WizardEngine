@@ -24,4 +24,5 @@
 #include "Renderer/Buffer.h"
 #include "Renderer/ConstantBuffer.h"
 #include "Renderer/Shader.h"
+#include "Renderer/Texture.h"
 #include "Renderer/RenderPipelineState.h"
