@@ -8,8 +8,9 @@ namespace Wizard {
     {
         BufferDesc buffDesc;
         buffDesc.Name      = "m Dynamic Vertex Buffer";
-        buffDesc.Usage     = USAGE_DEFAULT;
+        buffDesc.Usage     = USAGE_DYNAMIC;
         buffDesc.BindFlags = BIND_VERTEX_BUFFER;
+        buffDesc.CPUAccessFlags = CPU_ACCESS_WRITE;
         buffDesc.Size      = size;
 
         BufferData bufferData;

@@ -17,13 +17,6 @@ namespace Wizard {
     //     glm::mat4 World;
     // };
 
-    //    PixelShader
-    struct FlatPSConst
-    {
-        glm::vec4 Color;
-    };
-    //
-
     class Renderer2D
     {
     public:
@@ -34,16 +27,25 @@ namespace Wizard {
         static void EndScene();
         static void Flush();
 
-        static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotate = 0);
-        static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float rotate = 0);
+        static void StartBatch();
+        static void NextBatch();
 
+        static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color);
+        static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
+        static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotate);
+        static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float rotate);
+        static void DrawQuad(const glm::mat4& transform, const glm::vec4& color);
 
         // Texture
-        // static void DrawQuad(const glm::vec2& position, const glm::vec2& size, Texture* texture, const glm::vec4& color = {1, 1, 1, 1}, float rotate = 0);
-        // static void DrawQuad(const glm::vec3& position, const glm::vec2& size, Texture* texture, const glm::vec4& color = {1, 1, 1, 1}, float rotate = 0);
+        static void DrawQuad(const glm::vec2& position, const glm::vec2& size, std::shared_ptr<Texture> texture, const glm::vec4& color = {1, 1, 1, 1});
+        static void DrawQuad(const glm::vec3& position, const glm::vec2& size, std::shared_ptr<Texture> texture, const glm::vec4& color = {1, 1, 1, 1});
 
     private:
-        static void InitFlatPipelineState();
+        static void FlushQuad();
+
+        static void LoadTextureArray(std::shared_ptr<Texture> texture);
+
+        static void InitQuadPipelineState();
         static void InitTexturePipelineState();
 
 

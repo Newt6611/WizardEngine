@@ -60,7 +60,7 @@ namespace Wizard {
             Renderer::Get()->GetDeviceContext()->MapBuffer(pBuffer, MapType, MapFlags, pMappedData);
         }
 
-        static void UpmappBuffer(IBuffer *pBuffer, MAP_TYPE MapType)
+        static void UnmappBuffer(IBuffer *pBuffer, MAP_TYPE MapType)
         {
             Renderer::Get()->GetDeviceContext()->UnmapBuffer(pBuffer, MapType);
         }

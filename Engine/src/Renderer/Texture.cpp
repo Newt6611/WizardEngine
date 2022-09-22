@@ -6,10 +6,9 @@ namespace Wizard {
     {
         TextureLoadInfo loadInfo;
         loadInfo.IsSRGB = isRGB;
-        RefCntAutoPtr<ITexture> Tex;
         TextureData textureData; 
-        CreateTextureFromFile(filepath, loadInfo, device, &Tex);
+        CreateTextureFromFile(filepath, loadInfo, device, &m_Texture);
 
-        m_TextureView = Tex->GetDefaultView(TEXTURE_VIEW_SHADER_RESOURCE);
+        m_TextureView = m_Texture->GetDefaultView(TEXTURE_VIEW_SHADER_RESOURCE);
     }
 }
