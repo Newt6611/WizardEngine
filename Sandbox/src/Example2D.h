@@ -9,7 +9,7 @@ public:
 
     void OnEnter() override;
     void OnUpdate(float ts) override;
-    void OnEvent(Wizard::Event& e);
+    void OnEvent(Wizard::Event& e) override;
     void OnLeave() override;
 
 private:

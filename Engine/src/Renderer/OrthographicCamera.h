@@ -15,7 +15,6 @@ namespace Wizard {
 
         inline const glm::mat4& GetViewMatrix() const { return m_View;}
         inline const glm::mat4& GetProjectionMatrix() const { return m_Projection; }
-        inline const glm::mat4& GetViewProjectionMatrix() const { return m_Projection * m_View; }
         inline const glm::vec3& GetPosition() const { return m_Position; }
         inline float GetRotation() { return m_Rotation; }
 

@@ -1,5 +1,7 @@
 #include "Example2D.h"
 
+using namespace Wizard;
+
 Example2D::Example2D()
     : Layer("Example2D"), m_CameraController(1600.f / 900.f)
 {

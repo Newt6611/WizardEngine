@@ -12,7 +12,6 @@ namespace Wizard {
 
 	void OrthographicCameraController::OnUpdate(float ts)
 	{
-
 		if (Input::IsKeyPressed(Key::A))
 		{
 			m_CameraPosition.x -= cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;

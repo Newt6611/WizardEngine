@@ -9,6 +9,10 @@ namespace Wizard {
         Log::Init();
         WZ_ENGINE_INFO("Wizard Start");
 
+#ifdef WZ_APPLE
+        WZ_ENGINE_INFO("APPLEEEEEEE");
+#endif
+
         m_Window = Window::Get();
         m_Window->Init(1600, 900);
         m_Window->SetEventCallback(BIND_FN_EVENT(Application::OnEvent));
@@ -19,7 +23,7 @@ namespace Wizard {
         m_Renderer->Init(RendererAPI::D3D11, m_Window);
 #endif
 #ifdef WZ_APPLE
-        m_Renderer->Init(RendererAPI::Metal, m_Window);
+        m_Renderer->Init(RendererAPI::OpenGL, m_Window);
 #endif
 #ifdef WZ_LINUX
         m_Renderer->Init(RendererAPI::Vulkan, m_Window);

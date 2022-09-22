@@ -1,8 +1,9 @@
 #pragma once
 #include "Renderer.h"
 
-
 namespace Wizard {
+    using namespace Diligent;
+
     class RenderCommand
     {
     public:

@@ -3,35 +3,32 @@
 #include "Core.h"
 
 #if defined(WZ_WINDOWS)
-    #define GLFW_EXPOSE_NATIVE_WIN32
-    #ifdef WZ_D3D11
-        #include "Graphics/GraphicsEngineD3D11/interface/EngineFactoryD3D11.h"
-    #endif
-    #ifdef WZ_D3D12
-        #include "Graphics/GraphicsEngineD3D12/interface/EngineFactoryD3D12.h"
-    #endif
-    #ifdef WZ_VULKAN
-        #include "Graphics/GraphicsEngineVulkan/interface/EngineFactoryVk.h"
-    #endif
-    #ifdef WZ_GL
-        #include "Graphics/GraphicsEngineOpenGL/interface/EngineFactoryOpenGL.h"
-    #endif
-
+    #define GLFW_EXPOSE_NATIVE_WIN32 1
 #elif defined(WZ_APPLE)
-    #define PLATFORM_MACOS 1
-    #ifdef WZ_METAL
-        #include "Graphics/GraphicsEngineMetal/interface/EngineFactoryMtl.h"
-    #endif
-    #ifdef WZ_VULKAN
-        #include "Graphics/GraphicsEngineVulkan/interface/EngineFactoryVk.h"
+    #define GLFW_EXPOSE_NATIVE_NSGL
+    #ifdef PLATFORM_WIN32
+        #undef PLATFORM_WIN32
     #endif
 #elif defined(WZ_LINUX)
-    #define PLATFORM_LINUX 1
-    #define GLFW_EXPOSE_NATIVE_X11
-    #ifdef WZ_VULKAN
-        #include "Graphics/GraphicsEngineVulkan/interface/EngineFactoryVk.h"
-    #endif
+    #define GLFW_EXPOSE_NATIVE_X11 1
 #endif
+
+#if D3D11_SUPPORTED
+#    include "Graphics/GraphicsEngineD3D11/interface/EngineFactoryD3D11.h"
+#endif
+#if D3D12_SUPPORTED
+#    include "Graphics/GraphicsEngineD3D12/interface/EngineFactoryD3D12.h"
+#endif
+#if GL_SUPPORTED
+#    include "Graphics/GraphicsEngineOpenGL/interface/EngineFactoryOpenGL.h"
+#endif
+#if VULKAN_SUPPORTED
+#    include "Graphics/GraphicsEngineVulkan/interface/EngineFactoryVk.h"
+#endif
+#if METAL_SUPPORTED
+#    include "Graphics/GraphicsEngineMetal/interface/EngineFactoryMtl.h"
+#endif
+
 
 #include "Graphics/GraphicsEngine/interface/RenderDevice.h"
 #include "Graphics/GraphicsEngine/interface/DeviceContext.h"
@@ -56,9 +53,10 @@
 #include "ConstantBuffer.h"
 #include "Texture.h"
 
-using namespace Diligent;
+
 
 namespace Wizard {
+    using namespace Diligent;    
     
     class Window;
 

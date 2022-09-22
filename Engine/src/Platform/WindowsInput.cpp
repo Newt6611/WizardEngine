@@ -37,6 +37,5 @@ namespace Wizard {
 	{
 		return GetMousePosition().y;
 	}
-
 }
 #endif

@@ -2,8 +2,15 @@
 #include "Renderer.h"
 #include "Core/Log.h"
 #include "Core/Window.h"
+
+#include "GLFW/glfw3.h"
 #include "GLFW/glfw3native.h"
+
 #include "Renderer2D.h"
+
+#if WZ_APPLE
+    extern void* GetNSWindowView(GLFWwindow* wnd);
+#endif
 
 namespace Wizard
 {
@@ -18,15 +25,9 @@ namespace Wizard
         LinuxNativeWindow Window;
         Window.WindowId = glfwGetX11Window(window->GetWindow());
         Window.pDisplay = glfwGetX11Display();
-        if (m_Api == RendererAPI::OpenGL)
-            glfwMakeContextCurrent(window->GetWindow());
 #endif
 #if PLATFORM_MACOS
-        MacOSNativeWindow Window;
-        if (DevType == RENDER_DEVICE_TYPE_GL)
-            glfwMakeContextCurrent(m_Window);
-        else
-            Window.pNSView = GetNSWindowView(m_Window);
+        MacOSNativeWindow Window{GetNSWindowView(window->GetWindow())};
 #endif
 
         SwapChainDesc SCDesc;
@@ -35,9 +36,9 @@ namespace Wizard
 #if WZ_D3D11
         case RendererAPI::D3D11:
         {
-#    if ENGINE_DLL
+#   if ENGINE_DLL
             auto* GetEngineFactoryD3D11 = LoadGraphicsEngineD3D11();
-#    endif
+#   endif
             m_EngineFactory = GetEngineFactoryD3D11();
             IEngineFactoryD3D11* pFactoryD3D11 = dynamic_cast<IEngineFactoryD3D11*>(&(*m_EngineFactory));
             
@@ -53,10 +54,10 @@ namespace Wizard
 #if WZ_D3D12
         case RendererAPI::D3D12:
         {
-#    if ENGINE_DLL
+#   if ENGINE_DLL
 
             auto* GetEngineFactoryD3D12 = LoadGraphicsEngineD3D12();
-#    endif
+#   endif
             m_EngineFactory = GetEngineFactoryD3D12();
             IEngineFactoryD3D12* pFactoryD3D12 = dynamic_cast<IEngineFactoryD3D12*>(&(*m_EngineFactory));
 
@@ -72,10 +73,9 @@ namespace Wizard
 #if WZ_GL
         case RendererAPI::OpenGL:
         {
-#    if EXPLICITLY_LOAD_ENGINE_GL_DLL
-            // Load the dll and import GetEngineFactoryOpenGL() function
+#   if EXPLICITLY_LOAD_ENGINE_GL_DLL
             auto GetEngineFactoryOpenGL = LoadGraphicsEngineOpenGL();
-#    endif
+#   endif
             m_EngineFactory = GetEngineFactoryOpenGL();
             IEngineFactoryOpenGL* pFactoryOpenGL = dynamic_cast<IEngineFactoryOpenGL*>(&(*m_EngineFactory));
             EngineGLCreateInfo EngineCI;
@@ -89,9 +89,9 @@ namespace Wizard
 #if WZ_VULKAN
         case RendererAPI::Vulkan:
         {
-#    if EXPLICITLY_LOAD_ENGINE_VK_DLL
+#   if EXPLICITLY_LOAD_ENGINE_VK_DLL
             auto* GetEngineFactoryVk = LoadGraphicsEngineVk();
-#    endif
+#   endif
             m_EngineFactory = GetEngineFactoryVk();
             IEngineFactoryVk* pFactoryVk = dynamic_cast<IEngineFactoryVk*>(&(*m_EngineFactory));
 
@@ -104,7 +104,7 @@ namespace Wizard
         break;
 #endif
 
-#if METAL_SUPPORTED
+#if WZ_METAL
         case RendererAPI::Metal:
         {
             m_EngineFactory = GetEngineFactoryMtl();

@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
-project(Engine)
+# project(Engine LANGUAGES CXX OBJC OBJCXX)
+project(Engine LANGUAGES OBJC OBJCXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -27,21 +28,9 @@ elseif(UNIX AND NOT APPLE)
     add_definitions(-DWZ_LINUX)
     find_package(Threads)
 endif()
-
-
-# Assets
-set(ASSETS_SHADERS
-    assets/shaders/cube.ps
-    assets/shaders/cube.vs
-)
-
-set(ASSETS_TEXTURES
-    assets/textures/DGLogo.png
-)
-
-set(ASSETS ${ASSETS_SHADERS} ${ASSETS_TEXTURES})
-#
-
+if(PLATFORM_MACOS)
+    list(APPEND SOURCES src/Renderer/SurfaceHelper.mm)
+endif()
 
 # Source Files
 set(SOURCE_DIRS 
@@ -63,6 +52,9 @@ set(SOURCE_DIRS
 
     # Platform
     src/Platform/WindowsInput.cpp
+
+    # Helper
+    src/Renderer/SurfaceHelper.mm
 )
 
 # Include Directories
