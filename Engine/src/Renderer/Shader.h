@@ -13,7 +13,7 @@ namespace Wizard {
     public:
         Shader(const std::string& name, const char* file_path_v, const char* file_path_p, 
             IRenderDevice* device, IEngineFactory* engineFactory);
-        virtual ~Shader() {}
+        virtual ~Shader();
 
         inline IShader* GetVertexShader() { return m_VertexShader; }
         inline IShader* GetPixelShader() { return m_PixelShader; }

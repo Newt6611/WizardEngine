@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 # project(Engine LANGUAGES CXX OBJC OBJCXX)
-project(Engine LANGUAGES OBJC OBJCXX)
+project(Engine LANGUAGES)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -50,11 +50,17 @@ set(SOURCE_DIRS
     src/Renderer/OrthographicCamera.cpp
     src/Renderer/OrthographicCameraController.cpp
 
+    # Scene
+    src/Scene/Scene.cpp
+
     # Platform
     src/Platform/WindowsInput.cpp
 
     # Helper
-    src/Renderer/SurfaceHelper.mm
+    # src/Renderer/SurfaceHelper.mm
+
+    # thirdparty Diligent Imgui
+    thirdparty/DiligentTools/ThirdParty/imgui/backends/imgui_impl_glfw.cpp
 )
 
 # Include Directories
@@ -63,9 +69,12 @@ set(INCLUDE_DIRS
     src/Core 
     thirdparty/DiligentCore
     thirdparty/DiligentTools
+    
+    thirdparty
     thirdparty/spdlog/include 
     thirdparty/glfw/include
     thirdparty/glm
+    thirdparty/entt/single_include
 )
 
 # Libs
@@ -73,6 +82,7 @@ set(LINK_LIBS
     Diligent-Common 
     Diligent-GraphicsTools 
     Diligent-TextureLoader 
+    Diligent-Imgui 
     glfw 
 )
 

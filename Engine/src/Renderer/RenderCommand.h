@@ -7,9 +7,15 @@ namespace Wizard {
     class RenderCommand
     {
     public:
-        static void ClearRenderTarget(ITextureView *pView, const float *RGBA)
+        static void SetClearColor(float r, float g, float b, float a)
         {
-            Renderer::Get()->GetDeviceContext()->ClearRenderTarget(pView, RGBA, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+            float color[] = { r, g, b, a};
+            Renderer::Get()->SetClearColor(color);
+        }
+
+        static void ClearRenderTarget(ITextureView *pView)
+        {
+            Renderer::Get()->ClearColor(pView);
         }
 
         static void ClearDepthStencil(ITextureView *pView, CLEAR_DEPTH_STENCIL_FLAGS ClearFlags, 
@@ -43,6 +49,11 @@ namespace Wizard {
         static void CommitShaderResources(IShaderResourceBinding *pShaderResourceBinding)
         {
             Renderer::Get()->GetDeviceContext()->CommitShaderResources(pShaderResourceBinding, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+        }
+
+        static void CommitShaderResources(IShaderResourceBinding *pShaderResourceBinding, RESOURCE_STATE_TRANSITION_MODE StateTransitionMode)
+        {
+            Renderer::Get()->GetDeviceContext()->CommitShaderResources(pShaderResourceBinding, StateTransitionMode);
         }
 
         static void DrawIndexed(const Diligent::DrawIndexedAttribs &Attribs)

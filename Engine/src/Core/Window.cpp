@@ -2,8 +2,32 @@
 #include "Window.h"
 #include "Log.h"
 
+// #ifdef WZ_WINDOWS
+// #pragma comment(lib, "comctl32.lib")
+// #include <CommCtrl.h>
+// #endif
+
 namespace Wizard
 {
+    // static LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
+    // {
+    //     switch(msg)
+    //     {
+    //     case WM_CREATE:
+    //         WZ_ENGINE_INFO("Create");
+    //         break;
+    //     case WM_DESTROY:
+    //         break;
+    //     case WM_PAINT:
+    //         break;
+    //     case WM_COMMAND:
+    //         break;
+    //     default:
+    //         return DefWindowProc(hwnd, msg, wParam, lParam);
+    //     }
+    //     return 0;
+    // }
+
     void Window::Init(uint32_t width, uint32_t height)  
     {
         m_Data.Width = width;
@@ -24,8 +48,14 @@ namespace Wizard
             WZ_ENGINE_ERROR("Create GLFW Window Failed");
             return;
         }
+
         glfwMakeContextCurrent(m_Window);
         glfwSetWindowUserPointer(m_Window, &m_Data);
+        
+#if defined(WZ_WINDOWS)
+        m_NativeWindow = glfwGetWin32Window(m_Window);
+#endif
+        
 
         // events
         // window closed
@@ -66,14 +96,14 @@ namespace Wizard
         // mouse scroll
         glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xoffset, double yoffset) {
             WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-            MouseScrolledEvent e(xoffset, yoffset);
+            MouseScrolledEvent e((float)xoffset, (float)yoffset);
             data.EventCallback(e);
         });
     }
 
     void Window::OnUpdate()
     {
-        glfwSwapBuffers(m_Window);
+        //glfwSwapBuffers(m_Window);
         glfwPollEvents();
     }
 

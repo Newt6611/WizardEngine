@@ -15,6 +15,9 @@
 #include "Core/KeyCodes.h"
 #include "Core/MouseCodes.h"
 
+#include "Scene/Components.h"
+#include "Scene/Scene.h"
+
 #include "Renderer/Renderer.h"
 #include "Renderer/Renderer2D.h"
 #include "Renderer/RenderTool.h"
@@ -26,3 +29,15 @@
 #include "Renderer/Shader.h"
 #include "Renderer/Texture.h"
 #include "Renderer/RenderPipelineState.h"
+
+using namespace Diligent;
+
+// Real Imgui
+#include "ThirdParty/imgui/imgui.h"
+#include "ThirdParty/imgui/backends/imgui_impl_glfw.h"
+#include "ThirdParty/imgui/backends/imgui_impl_dx12.h"
+
+// Diligent Imgui
+#include "Imgui/interface/ImGuiDiligentRenderer.hpp"
+#include "Imgui/interface/ImGuiImplDiligent.hpp"
+#include "Imgui/interface/ImGuiUtils.hpp"

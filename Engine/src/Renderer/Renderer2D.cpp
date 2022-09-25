@@ -1,3 +1,4 @@
+#include "wzpch.h"
 #include "Renderer2D.h"
 #include "RenderTool.h"
 #include "RenderCommand.h"
@@ -6,29 +7,19 @@
 #include "Core/Log.h"
 
 namespace Wizard {
-    struct Q
-    {
-        glm::vec3 Position;
-    };
     
     struct QuadVertex
     {
         glm::vec3 Position;
         glm::vec4 Color;
         glm::vec2 UV;
-    };
-
-    struct TextureVertex
-    {
-        glm::vec3 Position;
-        glm::vec2 UV;
+        uint32_t TexIndex;
     };
 
     struct Render2DData
     {
         std::shared_ptr<ConstantBuffer<PerFrameConst>> PerFrameData;
         
-
         // Batch Rendering
         static const uint32_t MaxQuads = 10000;
         static const uint32_t MaxVertices = MaxQuads * 4;
@@ -44,22 +35,19 @@ namespace Wizard {
 
         glm::vec4 QuadVertexPosition[4];
 
-        RefCntAutoPtr<ITexture> TextureArray;
-        uint32_t CurrentTextureSlot = 0;
+        std::shared_ptr<Texture2D> WhiteTexture;
+        // For send to pixel shader
+        ITextureView* TextureViewArray[MaxTextureSlot]; 
+        // Holding texture Data to comapre textureID is in TextureViewArray or not <TextureID, Slot>
+        std::array<int, MaxTextureSlot> TextureDatas; 
+        uint32_t CurrentTextureSlot;
         //
-
-        // Quad Color Render Pipeline //
+        
+        // Quad Render Pipeline //
         std::shared_ptr<RenderPipelineState> QuadPipelineState;
         std::shared_ptr<Shader> QuadShader;
         RefCntAutoPtr<IShaderResourceBinding> QuadSRB;
-        ////////////////////////////////
-
-        // Texture Render Pipeline //
-        std::shared_ptr<VertexBuffer> TextureVertexBuffer;
-        std::shared_ptr<RenderPipelineState> TexturePipelineState;
-        std::shared_ptr<Shader> TextureShader;
-        RefCntAutoPtr<IShaderResourceBinding> TextureSRB;
-        /////////////////////////////
+        //////////////////////////
     };
 
     static Render2DData s_RenderData;
@@ -89,9 +77,15 @@ namespace Wizard {
         s_RenderData.QuadVertexPosition[2] = glm::vec4 {  0.5f,  0.5f, 0.0f, 1.0f };
         s_RenderData.QuadVertexPosition[3] = glm::vec4 {  0.5f, -0.5f, 0.0f, 1.0f };
 
+        s_RenderData.CurrentTextureSlot = 0;
+        s_RenderData.WhiteTexture = RenderTool::CreateTexture(1, 1, (const void*)0xffffffff);
+        
+        for (int i = 0; i < s_RenderData.MaxTextureSlot; ++i) {
+            s_RenderData.TextureViewArray[i] = s_RenderData.WhiteTexture->GetTextureView();        
+        }
+        s_RenderData.TextureDatas[0] = s_RenderData.WhiteTexture->GetTextureID();
 
         s_RenderData.PerFrameData = RenderTool::CreateConstantBuffer<PerFrameConst>("PerFrameConstant");
-        //s_RenderData.PerObjData = RenderTool::CreateConstantBuffer<PerObjConst>("PerObjConstant");
 
         InitQuadPipelineState();
     }
@@ -125,6 +119,7 @@ namespace Wizard {
     {
         s_RenderData.QuadVertexBufferPtr = s_RenderData.QuadVertexBufferBase;
         s_RenderData.QuadIndexCount = 0;
+        s_RenderData.CurrentTextureSlot = 0;
     }
 
     void Renderer2D::NextBatch()
@@ -140,14 +135,18 @@ namespace Wizard {
             Vertices[i].Position = s_RenderData.QuadVertexBufferBase[i].Position;
             Vertices[i].Color = s_RenderData.QuadVertexBufferBase[i].Color;
             Vertices[i].UV = s_RenderData.QuadVertexBufferBase[i].UV;
+            Vertices[i].TexIndex = s_RenderData.QuadVertexBufferBase[i].TexIndex;
         }
 
         const uint64_t offset = 0;
         IBuffer* pBuffers[] = {s_RenderData.QuadVertexBuffer->GetBuffer()};
         RenderCommand::SetVertexBuffers(0, 1, pBuffers, &offset, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, SET_VERTEX_BUFFERS_FLAG_RESET);
         RenderCommand::SetIndexBuffer(s_RenderData.QuadIndexBuffer->GetBuffer(), 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+        
+        s_RenderData.QuadSRB->GetVariableByName(SHADER_TYPE_PIXEL, "g_Textures")->SetArray((IDeviceObject**)s_RenderData.TextureViewArray, 0, s_RenderData.MaxTextureSlot);
 
         RenderCommand::SetPipelineState(s_RenderData.QuadPipelineState->GetPipelineState());
+        
         RenderCommand::CommitShaderResources(s_RenderData.QuadSRB);
 
         DrawIndexedAttribs drawAttrs;
@@ -157,7 +156,7 @@ namespace Wizard {
         RenderCommand::DrawIndexed(drawAttrs);
     }
 
-    
+    // Color Quad // 
     void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
     {
         DrawQuad(glm::vec3(position.x, position.y, 0), size, color);
@@ -167,7 +166,7 @@ namespace Wizard {
     {
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * 
 			glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-        DrawQuad(transform, color);
+        DrawQuad(transform, color, nullptr);
     }
 
     void Renderer2D::DrawQuad(const glm::vec2 &position, const glm::vec2 &size, const glm::vec4 &color, float rotate)
@@ -180,22 +179,41 @@ namespace Wizard {
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * 
             glm::rotate(glm::mat4(1.0f), glm::radians(rotate), glm::vec3(0.f, 0.f, 1.f)) *
 			    glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-        DrawQuad(transform, color);
+        DrawQuad(transform, color, nullptr);
     }
 
-    void Renderer2D:: DrawQuad(const glm::vec2& position, const glm::vec2& size, std::shared_ptr<Texture> texture, const glm::vec4& color)
+
+    // Texture Quad //
+    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, const glm::vec4& color)
     {
         DrawQuad(glm::vec3(position.x, position.y, 0), size, texture, color);
     }
     
-    void Renderer2D:: DrawQuad(const glm::vec3& position, const glm::vec2& size, std::shared_ptr<Texture> texture, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, const glm::vec4& color)
     {
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * 
+			glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-        //s_RenderData.TextureSRB->GetVariableByName(SHADER_TYPE_PIXEL, "g_Texture")->Set(texture->GetTextureView());
+        DrawQuad(transform, color, texture);
+    }
+    
+    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, float rotate, const glm::vec4& color)
+    {
+        DrawQuad(glm::vec3(position.x, position.y, 0), size, texture, rotate, color);
     }
 
-    void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, float rotate, const glm::vec4& color)
     {
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * 
+            glm::rotate(glm::mat4(1.0f), glm::radians(rotate), glm::vec3(0.f, 0.f, 1.f)) *
+			    glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+
+        DrawQuad(transform, color, texture);
+    }
+
+    void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, std::shared_ptr<Texture2D> texture)
+    {
+        int texIndex = GetTexIndex(texture);
         uint32_t vertexCount = 4;
         glm::vec2 texcoord[] = { { 0.f, 1.f }, { 0.f, 0.f }, { 1.f, 0.f }, { 1.f, 1.f } };
 
@@ -206,90 +224,43 @@ namespace Wizard {
             s_RenderData.QuadVertexBufferPtr->Position = transform * s_RenderData.QuadVertexPosition[i];
             s_RenderData.QuadVertexBufferPtr->UV = texcoord[i];
             s_RenderData.QuadVertexBufferPtr->Color = color;
+            s_RenderData.QuadVertexBufferPtr->TexIndex = texIndex;
             s_RenderData.QuadVertexBufferPtr++;
         }
 
         s_RenderData.QuadIndexCount += 6;
     }
-
-    void Renderer2D::LoadTextureArray(std::shared_ptr<Texture> texture)
-    {
-        // Create Texture Array
-        if (!s_RenderData.TextureArray) {
-            TextureDesc TexArrDesc      = texture->GetTextureDesc();
-            TexArrDesc.ArraySize = s_RenderData.MaxTextureSlot;
-            TexArrDesc.Type      = RESOURCE_DIM_TEX_2D_ARRAY;
-            TexArrDesc.Usage     = USAGE_DEFAULT;
-            TexArrDesc.BindFlags = BIND_SHADER_RESOURCE;
-            Renderer::Get()->GetDevice()->CreateTexture(TexArrDesc, nullptr, &s_RenderData.TextureArray);
-        }
-
-        // copy texture into array
-        for (uint32_t mip = 0; mip < texture->GetTextureDesc().MipLevels; ++mip) {
-            CopyTextureAttribs CopyAttribs(texture->GetTexture(), RESOURCE_STATE_TRANSITION_MODE_TRANSITION,
-                                           s_RenderData.TextureArray, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-            CopyAttribs.SrcMipLevel = mip;
-            CopyAttribs.DstMipLevel = mip;
-            CopyAttribs.DstSlice    = s_RenderData.CurrentTextureSlot; // texture index
-            Renderer::Get()->GetDeviceContext()->CopyTexture(CopyAttribs);
-        }
-
-        ++s_RenderData.CurrentTextureSlot;
-    }
+    //
 
     void Renderer2D::InitQuadPipelineState()
     {
         s_RenderData.QuadPipelineState = std::make_shared<RenderPipelineState>("Flat Pipeline State");
         s_RenderData.QuadShader = RenderTool::CreateShader("flat color", "/shaders/quad_vs.hlsl","/shaders/quad_ps.hlsl");
+
         s_RenderData.QuadPipelineState->createInfo.pVS = s_RenderData.QuadShader->GetVertexShader();
         s_RenderData.QuadPipelineState->createInfo.pPS = s_RenderData.QuadShader->GetPixelShader();
         s_RenderData.QuadPipelineState->createInfo.GraphicsPipeline.RasterizerDesc.CullMode = CULL_MODE_BACK;
         LayoutElement layoutElement[] = {
             LayoutElement{0, 0, 3, VT_FLOAT32, False},
             LayoutElement{1, 0, 4, VT_FLOAT32, False},
-            LayoutElement{2, 0, 2, VT_FLOAT32, False}
+            LayoutElement{2, 0, 2, VT_FLOAT32, False},
+            LayoutElement{3, 0, 1, VT_UINT32, False}
         };
 
         s_RenderData.QuadPipelineState->createInfo.GraphicsPipeline.InputLayout.LayoutElements = layoutElement;
         s_RenderData.QuadPipelineState->createInfo.GraphicsPipeline.InputLayout.NumElements = _countof(layoutElement);
         
-        s_RenderData.QuadPipelineState->Generate();
-        
-        s_RenderData.QuadPipelineState->GetPipelineState()->GetStaticVariableByName(SHADER_TYPE_VERTEX, "PerFrame")->Set(s_RenderData.PerFrameData->GetBuffer());
+        s_RenderData.QuadPipelineState->createInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].BlendEnable = true;
+        s_RenderData.QuadPipelineState->createInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].SrcBlend = BLEND_FACTOR_SRC_ALPHA;
+        s_RenderData.QuadPipelineState->createInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].DestBlend = BLEND_FACTOR_INV_SRC_ALPHA;
 
-        s_RenderData.QuadPipelineState->GetPipelineState()->CreateShaderResourceBinding(&s_RenderData.QuadSRB, true);
-    }
-
-    void Renderer2D::InitTexturePipelineState()
-    {
-        TextureVertex vertex[] = {
-            { glm::vec3{-0.5f, -0.5f, 0.f }, glm::vec2 { 0, 1 } },
-            { glm::vec3{-0.5f,  0.5f, 0.f }, glm::vec2 { 0, 0 } },
-            { glm::vec3{ 0.5f,  0.5f, 0.f }, glm::vec2 { 1, 0 } },
-            { glm::vec3{ 0.5f, -0.5f, 0.f }, glm::vec2 { 1, 1 } }
-        };
-        s_RenderData.TextureVertexBuffer = RenderTool::CreateVertexBuffer(vertex, sizeof(vertex), 4);
-
-        s_RenderData.TexturePipelineState = std::make_shared<RenderPipelineState>("Texture Pipeline State");
-        s_RenderData.TextureShader = RenderTool::CreateShader("texture", "/shaders/texturevs.hlsl","/shaders/textureps.hlsl");
-        s_RenderData.TexturePipelineState->createInfo.pVS = s_RenderData.TextureShader->GetVertexShader();
-        s_RenderData.TexturePipelineState->createInfo.pPS = s_RenderData.TextureShader->GetPixelShader();
-        
-        
-        LayoutElement layoutElement[] = {
-            LayoutElement{0, 0, 3, VT_FLOAT32, False},
-            LayoutElement{1, 0, 2, VT_FLOAT32, False}
-        };
-
-        s_RenderData.TexturePipelineState->createInfo.GraphicsPipeline.InputLayout.LayoutElements = layoutElement;
-        s_RenderData.TexturePipelineState->createInfo.GraphicsPipeline.InputLayout.NumElements = _countof(layoutElement);
-        
         // Texture
         ShaderResourceVariableDesc Vars[] = {
-            {SHADER_TYPE_PIXEL, "g_Texture", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE}
+            // SHADER_RESOURCE_VARIABLE_TYPE_DYNAMIC means you can dynamic set SRB's data in one frame
+            { SHADER_TYPE_PIXEL, "g_Textures", SHADER_RESOURCE_VARIABLE_TYPE_DYNAMIC }
         };
-        s_RenderData.TexturePipelineState->createInfo.PSODesc.ResourceLayout.Variables = Vars;
-        s_RenderData.TexturePipelineState->createInfo.PSODesc.ResourceLayout.NumVariables = _countof(Vars);
+        s_RenderData.QuadPipelineState->createInfo.PSODesc.ResourceLayout.Variables = Vars;
+        s_RenderData.QuadPipelineState->createInfo.PSODesc.ResourceLayout.NumVariables = _countof(Vars);
 
         // Sampler
         SamplerDesc SamLinearClampDesc {
@@ -298,17 +269,39 @@ namespace Wizard {
         };
 
         ImmutableSamplerDesc ImtblSamplers[] = {
-            {SHADER_TYPE_PIXEL, "g_Texture", SamLinearClampDesc}
+            {SHADER_TYPE_PIXEL, "g_Textures", SamLinearClampDesc}
         };
 
-        s_RenderData.TexturePipelineState->createInfo.PSODesc.ResourceLayout.ImmutableSamplers = ImtblSamplers;
-        s_RenderData.TexturePipelineState->createInfo.PSODesc.ResourceLayout.NumImmutableSamplers = _countof(ImtblSamplers);
+        s_RenderData.QuadPipelineState->createInfo.PSODesc.ResourceLayout.ImmutableSamplers = ImtblSamplers;
+        s_RenderData.QuadPipelineState->createInfo.PSODesc.ResourceLayout.NumImmutableSamplers = _countof(ImtblSamplers);
 
-        s_RenderData.TexturePipelineState->Generate();
+        s_RenderData.QuadPipelineState->Generate();
         
-        //s_RenderData.TexturePipelineState->GetPipelineState()->GetStaticVariableByName(SHADER_TYPE_VERTEX, "PerObj")->Set(s_RenderData.PerObjData->GetBuffer());
-        s_RenderData.TexturePipelineState->GetPipelineState()->GetStaticVariableByName(SHADER_TYPE_VERTEX, "PerFrame")->Set(s_RenderData.PerFrameData->GetBuffer());
+        s_RenderData.QuadPipelineState->GetPipelineState()->GetStaticVariableByName(SHADER_TYPE_VERTEX, "PerFrame")->Set(s_RenderData.PerFrameData->GetBuffer());
 
-        s_RenderData.TexturePipelineState->GetPipelineState()->CreateShaderResourceBinding(&s_RenderData.TextureSRB, true);
+        s_RenderData.QuadPipelineState->GetPipelineState()->CreateShaderResourceBinding(&s_RenderData.QuadSRB, true);
+    }
+
+    int Renderer2D::GetTexIndex(std::shared_ptr<Texture2D> texture)
+    {
+        if (!texture) return 0;
+        int texIndex = 0;
+        for (int i = 1; i < s_RenderData.CurrentTextureSlot + 1; ++i) {
+            // if TextureDatas has texture, then we get index for TextureViewArray
+            if (s_RenderData.TextureDatas[i] == texture->GetTextureID()) {
+                texIndex = i;
+                break;
+            }
+        }
+
+        if (texIndex == 0) {
+            if (s_RenderData.CurrentTextureSlot >= s_RenderData.MaxTextureSlot - 1)
+                NextBatch();
+            texIndex = ++s_RenderData.CurrentTextureSlot;
+            s_RenderData.TextureViewArray[texIndex] = texture->GetTextureView();
+            s_RenderData.TextureDatas[texIndex] = texture->GetTextureID();
+        }
+
+        return texIndex;
     }
 }

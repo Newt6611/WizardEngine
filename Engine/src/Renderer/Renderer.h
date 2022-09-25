@@ -2,58 +2,45 @@
 
 #include "Core.h"
 
-#if defined(WZ_WINDOWS)
-    #define GLFW_EXPOSE_NATIVE_WIN32 1
-#elif defined(WZ_APPLE)
-    #define GLFW_EXPOSE_NATIVE_NSGL
-    #ifdef PLATFORM_WIN32
-        #undef PLATFORM_WIN32
-    #endif
-#elif defined(WZ_LINUX)
-    #define GLFW_EXPOSE_NATIVE_X11 1
-#endif
-
 #if D3D11_SUPPORTED
-#    include "Graphics/GraphicsEngineD3D11/interface/EngineFactoryD3D11.h"
+#    include <Graphics/GraphicsEngineD3D11/interface/EngineFactoryD3D11.h>
 #endif
 #if D3D12_SUPPORTED
-#    include "Graphics/GraphicsEngineD3D12/interface/EngineFactoryD3D12.h"
+#    include <Graphics/GraphicsEngineD3D12/interface/EngineFactoryD3D12.h>
 #endif
 #if GL_SUPPORTED
-#    include "Graphics/GraphicsEngineOpenGL/interface/EngineFactoryOpenGL.h"
+#    include <Graphics/GraphicsEngineOpenGL/interface/EngineFactoryOpenGL.h>
 #endif
 #if VULKAN_SUPPORTED
-#    include "Graphics/GraphicsEngineVulkan/interface/EngineFactoryVk.h"
+#    include <Graphics/GraphicsEngineVulkan/interface/EngineFactoryVk.h>
 #endif
 #if METAL_SUPPORTED
-#    include "Graphics/GraphicsEngineMetal/interface/EngineFactoryMtl.h"
+#    include <Graphics/GraphicsEngineMetal/interface/EngineFactoryMtl.h>
 #endif
 
 
-#include "Graphics/GraphicsEngine/interface/RenderDevice.h"
-#include "Graphics/GraphicsEngine/interface/DeviceContext.h"
-#include "Graphics/GraphicsEngine/interface/SwapChain.h"
-#include "Graphics/GraphicsEngine/interface/EngineFactory.h"
+#include <Graphics/GraphicsEngine/interface/RenderDevice.h>
+#include <Graphics/GraphicsEngine/interface/DeviceContext.h>
+#include <Graphics/GraphicsEngine/interface/SwapChain.h>
+#include <Graphics/GraphicsEngine/interface/EngineFactory.h>
 
-#include "Graphics/GraphicsEngine/interface/Texture.h"
-#include "Graphics/GraphicsEngine/interface/TextureView.h"
+#include <Graphics/GraphicsEngine/interface/Texture.h>
+#include <Graphics/GraphicsEngine/interface/TextureView.h>
 
-#include "Graphics/GraphicsTools/interface/MapHelper.hpp"
+#include <Graphics/GraphicsTools/interface/MapHelper.hpp>
 
-#include "Common/interface/RefCntAutoPtr.hpp"
-#include "TextureLoader/interface/TextureLoader.h"
-#include "TextureLoader/interface/TextureUtilities.h"
+#include <Common/interface/RefCntAutoPtr.hpp>
+#include <TextureLoader/interface/TextureLoader.h>
+#include <TextureLoader/interface/TextureUtilities.h>
 
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "RenderPipelineState.h"
 #include "Shader.h"
 #include "Buffer.h"
 #include "ConstantBuffer.h"
 #include "Texture.h"
-
-
 
 namespace Wizard {
     using namespace Diligent;    
@@ -88,10 +75,12 @@ namespace Wizard {
 
         inline const std::string& GetAPIName() { return m_ApiName; }
 
+        void SetClearColor(float color[4]);
+        void ClearColor(ITextureView* view);
+
         inline void ResetDrawCall() { m_DrawCall = 0; }
         inline void AddOneDrawCall() { ++m_DrawCall; }
         inline int GetDrawCall() { return m_DrawCall; } 
-
 
         inline IRenderDevice* GetDevice() { return m_Device; }
         inline IDeviceContext* GetDeviceContext() { return m_DeviceContext; }
@@ -118,9 +107,14 @@ namespace Wizard {
             return std::make_shared<IndexBuffer>(indices, count, m_Device);
         }
 
-        std::shared_ptr<Texture> CreateTexture(const char* filepath, bool isRGB)
+        std::shared_ptr<Texture2D> CreateTexture(const char* filepath, bool isRGB)
         {
-            return std::make_shared<Texture>(filepath, isRGB, m_Device);
+            return std::make_shared<Texture2D>(filepath, isRGB, m_Device);
+        }
+
+        std::shared_ptr<Texture2D> CreateTexture(uint32_t width, uint32_t height, const void* data)
+        {
+            return std::make_shared<Texture2D>(width, height, data, m_Device, m_DeviceContext);
         }
 
         template <typename T>
@@ -143,6 +137,8 @@ namespace Wizard {
         RefCntAutoPtr<IRenderDevice> m_Device;
         RefCntAutoPtr<IDeviceContext> m_DeviceContext;
         RefCntAutoPtr<ISwapChain> m_SwapChain;
+
+        float m_ClearColor[4] = { 0.35f, 0.35f, 0.35f, 1.0f };
 
         int m_DrawCall = 0;
     };

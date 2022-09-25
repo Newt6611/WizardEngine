@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <fstream>
 
+#include <array>
 #include <vector>
 #include <map>
 #include <unordered_map>

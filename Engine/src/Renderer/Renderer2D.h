@@ -34,20 +34,20 @@ namespace Wizard {
         static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
         static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotate);
         static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float rotate);
-        static void DrawQuad(const glm::mat4& transform, const glm::vec4& color);
 
         // Texture
-        static void DrawQuad(const glm::vec2& position, const glm::vec2& size, std::shared_ptr<Texture> texture, const glm::vec4& color = {1, 1, 1, 1});
-        static void DrawQuad(const glm::vec3& position, const glm::vec2& size, std::shared_ptr<Texture> texture, const glm::vec4& color = {1, 1, 1, 1});
+        static void DrawQuad(const glm::vec2& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, const glm::vec4& color = {1, 1, 1, 1});
+        static void DrawQuad(const glm::vec3& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, const glm::vec4& color = {1, 1, 1, 1});
+        static void DrawQuad(const glm::vec2& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, float rotate, const glm::vec4& color = {1, 1, 1, 1});
+        static void DrawQuad(const glm::vec3& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, float rotate, const glm::vec4& color = {1, 1, 1, 1});
+        
+        static void DrawQuad(const glm::mat4& transform, const glm::vec4& color, std::shared_ptr<Texture2D> texture);
 
     private:
+        
         static void FlushQuad();
 
-        static void LoadTextureArray(std::shared_ptr<Texture> texture);
-
+        static int GetTexIndex(std::shared_ptr<Texture2D> texture);
         static void InitQuadPipelineState();
-        static void InitTexturePipelineState();
-
-
     };
 }

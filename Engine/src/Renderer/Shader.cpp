@@ -26,4 +26,8 @@ namespace Wizard {
         ShaderCI.FilePath = file_path_p;
         device->CreateShader(ShaderCI, &m_PixelShader);
     }
+
+    Shader::~Shader()
+    {
+    }
 }

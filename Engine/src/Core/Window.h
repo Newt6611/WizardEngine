@@ -1,8 +1,13 @@
 #pragma once
+#include "Core.h"
+#include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
+
 #include "Events/Event.h"
 #include "Events/ApplicationEvents.h"
 #include "Events/MouseEvents.h"
-#include <GLFW/glfw3.h>
+#include "Core/Log.h"
+
 
 namespace Wizard
 {
@@ -29,7 +34,10 @@ namespace Wizard
             return m_Window;
         }
 
-        inline void* GetNativeWindow() { return m_Window; }
+        inline void* GetNativeWindow() {
+            if (!m_NativeWindow) WZ_ENGINE_ERROR("Native Window is nullptr"); 
+            return m_NativeWindow;     
+        }
 
         void OnUpdate();
 
@@ -44,8 +52,9 @@ namespace Wizard
         
     private:
         GLFWwindow* m_Window = nullptr;
+        void* m_NativeWindow = nullptr;
         bool m_WindowShouldClose = false;
-
+        
         struct WindowData
         {   
             const char* Title = "";

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Graphics/GraphicsEngine/interface/RenderDevice.h"
-#include "Common/interface/RefCntAutoPtr.hpp"
-#include "Graphics/GraphicsEngine/interface/Buffer.h"
+#include <Graphics/GraphicsEngine/interface/RenderDevice.h>
+#include <Common/interface/RefCntAutoPtr.hpp>
+#include <Graphics/GraphicsEngine/interface/Buffer.h>
 
 
 namespace Wizard {

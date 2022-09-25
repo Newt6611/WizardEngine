@@ -20,7 +20,7 @@ namespace Wizard {
         m_Renderer = Renderer::Get();
 
 #ifdef WZ_WINDOWS
-        m_Renderer->Init(RendererAPI::D3D11, m_Window);
+        m_Renderer->Init(RendererAPI::D3D12, m_Window);
 #endif
 #ifdef WZ_APPLE
         m_Renderer->Init(RendererAPI::OpenGL, m_Window);
@@ -37,7 +37,6 @@ namespace Wizard {
 
     void Application::Run()
     {
-        WZ_ENGINE_INFO("run");
         while (!m_Window->WindowShouldClose()) {
             float time = glfwGetTime();
             float ts = time - m_LastTimeFrame;
