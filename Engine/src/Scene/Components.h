@@ -3,11 +3,22 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#include <memory>
 #include "Renderer/Texture.h"
+#include "ScriptingEntity.h"
+
+#include <functional>
+#include <memory>
+#include <box2d/box2d.h>
 
 namespace Wizard {
     
+    struct TagComponent
+    {
+        std::string Name;
+        TagComponent() = default;
+        TagComponent(const std::string& name) : Name(name) { };
+    };
+
     struct TransformComponent
     {
         glm::vec3 Position = { 0.f, 0.f, 0.f };
@@ -40,5 +51,44 @@ namespace Wizard {
             : Texture(texture) { }
         SpriteRendererComponent(std::shared_ptr<Texture2D> texture, const glm::vec4& color)
             : Texture(texture), Color(color) { }
+    };
+
+    struct SpriteAnimationComponent
+    {
+        std::vector<std::shared_ptr<Texture2D>> Sprites;
+        int CurrentSpriteIndex = 0;
+        float Speed = 0.5f;
+        float TimeBtw = 0.0f;
+
+        SpriteAnimationComponent() = default;
+    };
+
+    struct Rigidbody2DComponent
+    {
+        b2Body* Body;
+        b2BodyType BodyType = b2BodyType::b2_staticBody;
+        bool FixedRotation = false;
+
+        Rigidbody2DComponent() = default;
+    };
+
+    struct BoxCollider2DComponent
+    {
+        glm::vec2 Offset = { 0.0f, 0.0f };
+		glm::vec2 Size = { 0.5f, 0.5f };
+        float Density = 1.0f;
+		float Friction = 0.5f;
+		float Restitution = 0.0f;
+		float RestitutionThreshold = 0.5f;
+
+        BoxCollider2DComponent() = default;
+    };
+
+    struct ScriptingComponent
+    {
+        ScriptingEntity* Instance = nullptr;
+        bool IsCreated = false;
+        ScriptingComponent(ScriptingEntity* entity) 
+            : Instance(entity) { }
     };
 }

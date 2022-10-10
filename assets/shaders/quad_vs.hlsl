@@ -4,6 +4,7 @@ struct VSInput
     float4 Color    : ATTRIB1;
     float2 UV       : ATTRIB2;
     uint TexIndex   : ATTRIB3;
+    int EntityID    : ATTRIB4;
 };
 
 struct PSInput
@@ -12,6 +13,7 @@ struct PSInput
     float4 Color    : Color;
     float2 UV       : UV;
     uint TexIndex   : TexIndex;
+    int EntityID    : EntityID;
 };
 
 cbuffer PerFrame
@@ -26,4 +28,5 @@ void main(in VSInput VSIn, out PSInput PSIn)
     PSIn.Color = VSIn.Color;
     PSIn.UV = VSIn.UV;
     PSIn.TexIndex = VSIn.TexIndex;
+    PSIn.EntityID = VSIn.EntityID;
 }

@@ -74,6 +74,16 @@ namespace Wizard {
             return Renderer::Get()->GetSwapChain()->GetDepthBufferDSV();
         }
 
+        static ITextureView* GetMousePickingView()
+        {
+            return Renderer::Get()->m_MousePickingView;
+        }
+
+        static uint32_t GetMousePointingEntity()
+        {
+            return Renderer::Get()->m_MousePointingEntity;
+        }
+
         static int GetDrawCall()
         {
             return Renderer::Get()->GetDrawCall();

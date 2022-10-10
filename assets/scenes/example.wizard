@@ -1,0 +1,49 @@
+Scene: Untitled
+Entities:
+  - Entity: 2
+    Tag:
+      Name: E1
+    Transform:
+      Position: [-1, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRenderer:
+      Color: [0, 1, 1, 1]
+  - Entity: 1
+    Tag:
+      Name: E2
+    Transform:
+      Position: [0, 7.80000019, 0]
+      Rotation: [0, 0, 0.400000006]
+      Scale: [1, 1, 1]
+    SpriteRenderer:
+      Color: [1, 0.0343137383, 0.0343137383, 1]
+    Rigidbody2D:
+      BodyType: DynamicBody
+      FixedRotation: 0
+    BoxCollider2D:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 1
+      RestitutionThreshold: 0.5
+  - Entity: 0
+    Tag:
+      Name: E3
+    Transform:
+      Position: [0, -2, 0]
+      Rotation: [0, 0, 0]
+      Scale: [20, 1, 1]
+    SpriteRenderer:
+      Color: [0, 1, 0, 1]
+    Rigidbody2D:
+      BodyType: StaticBody
+      FixedRotation: 0
+    BoxCollider2D:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5

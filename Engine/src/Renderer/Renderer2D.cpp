@@ -14,6 +14,7 @@ namespace Wizard {
         glm::vec4 Color;
         glm::vec2 UV;
         uint32_t TexIndex;
+        int EntityID;
     };
 
     struct Render2DData
@@ -136,6 +137,7 @@ namespace Wizard {
             Vertices[i].Color = s_RenderData.QuadVertexBufferBase[i].Color;
             Vertices[i].UV = s_RenderData.QuadVertexBufferBase[i].UV;
             Vertices[i].TexIndex = s_RenderData.QuadVertexBufferBase[i].TexIndex;
+            Vertices[i].EntityID = s_RenderData.QuadVertexBufferBase[i].EntityID;
         }
 
         const uint64_t offset = 0;
@@ -157,61 +159,61 @@ namespace Wizard {
     }
 
     // Color Quad // 
-    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, int entityID)
     {
-        DrawQuad(glm::vec3(position.x, position.y, 0), size, color);
+        DrawQuad(glm::vec3(position.x, position.y, 0), size, color, entityID);
     }
 
-    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, int entityID)
     {
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * 
 			glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-        DrawQuad(transform, color, nullptr);
+        DrawQuad(transform, color, nullptr, entityID);
     }
 
-    void Renderer2D::DrawQuad(const glm::vec2 &position, const glm::vec2 &size, const glm::vec4 &color, float rotate)
+    void Renderer2D::DrawQuad(const glm::vec2 &position, const glm::vec2 &size, const glm::vec4 &color, float rotate, int entityID)
     {
-        DrawQuad(glm::vec3(position.x, position.y, 0), size, color, rotate);
+        DrawQuad(glm::vec3(position.x, position.y, 0), size, color, rotate, entityID);
     }
 
-    void Renderer2D::DrawQuad(const glm::vec3 &position, const glm::vec2 &size, const glm::vec4 &color, float rotate)
+    void Renderer2D::DrawQuad(const glm::vec3 &position, const glm::vec2 &size, const glm::vec4 &color, float rotate, int entityID)
     {
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * 
             glm::rotate(glm::mat4(1.0f), glm::radians(rotate), glm::vec3(0.f, 0.f, 1.f)) *
 			    glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-        DrawQuad(transform, color, nullptr);
+        DrawQuad(transform, color, nullptr, entityID);
     }
 
 
     // Texture Quad //
-    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, const glm::vec4& color, int entityID)
     {
-        DrawQuad(glm::vec3(position.x, position.y, 0), size, texture, color);
+        DrawQuad(glm::vec3(position.x, position.y, 0), size, texture, color, entityID);
     }
     
-    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, const glm::vec4& color, int entityID)
     {
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * 
 			glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-        DrawQuad(transform, color, texture);
+        DrawQuad(transform, color, texture, entityID);
     }
     
-    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, float rotate, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, float rotate, const glm::vec4& color, int entityID)
     {
-        DrawQuad(glm::vec3(position.x, position.y, 0), size, texture, rotate, color);
+        DrawQuad(glm::vec3(position.x, position.y, 0), size, texture, rotate, color, entityID);
     }
 
-    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, float rotate, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, std::shared_ptr<Texture2D> texture, float rotate, const glm::vec4& color, int entityID)
     {
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * 
             glm::rotate(glm::mat4(1.0f), glm::radians(rotate), glm::vec3(0.f, 0.f, 1.f)) *
 			    glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-        DrawQuad(transform, color, texture);
+        DrawQuad(transform, color, texture, entityID);
     }
 
-    void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, std::shared_ptr<Texture2D> texture)
+    void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, std::shared_ptr<Texture2D> texture, int entityID)
     {
         int texIndex = GetTexIndex(texture);
         uint32_t vertexCount = 4;
@@ -225,6 +227,7 @@ namespace Wizard {
             s_RenderData.QuadVertexBufferPtr->UV = texcoord[i];
             s_RenderData.QuadVertexBufferPtr->Color = color;
             s_RenderData.QuadVertexBufferPtr->TexIndex = texIndex;
+            s_RenderData.QuadVertexBufferPtr->EntityID = entityID;
             s_RenderData.QuadVertexBufferPtr++;
         }
 
@@ -244,8 +247,13 @@ namespace Wizard {
             LayoutElement{0, 0, 3, VT_FLOAT32, False},
             LayoutElement{1, 0, 4, VT_FLOAT32, False},
             LayoutElement{2, 0, 2, VT_FLOAT32, False},
-            LayoutElement{3, 0, 1, VT_UINT32, False}
+            LayoutElement{3, 0, 1, VT_UINT32, False},
+            LayoutElement{4, 0, 1, VT_INT32, False}
         };
+        
+        s_RenderData.QuadPipelineState->createInfo.GraphicsPipeline.NumRenderTargets = 2;
+        // For mouse picking
+        s_RenderData.QuadPipelineState->createInfo.GraphicsPipeline.RTVFormats[1] = TEX_FORMAT_R32_FLOAT;
 
         s_RenderData.QuadPipelineState->createInfo.GraphicsPipeline.InputLayout.LayoutElements = layoutElement;
         s_RenderData.QuadPipelineState->createInfo.GraphicsPipeline.InputLayout.NumElements = _countof(layoutElement);
@@ -253,6 +261,10 @@ namespace Wizard {
         s_RenderData.QuadPipelineState->createInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].BlendEnable = true;
         s_RenderData.QuadPipelineState->createInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].SrcBlend = BLEND_FACTOR_SRC_ALPHA;
         s_RenderData.QuadPipelineState->createInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].DestBlend = BLEND_FACTOR_INV_SRC_ALPHA;
+        s_RenderData.QuadPipelineState->createInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].BlendOp  = BLEND_OPERATION_ADD;
+        s_RenderData.QuadPipelineState->createInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].SrcBlendAlpha  = BLEND_FACTOR_ONE;
+        s_RenderData.QuadPipelineState->createInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].DestBlendAlpha  = BLEND_FACTOR_ZERO;
+        s_RenderData.QuadPipelineState->createInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].BlendOpAlpha  = BLEND_OPERATION_ADD;
 
         // Texture
         ShaderResourceVariableDesc Vars[] = {
@@ -277,6 +289,7 @@ namespace Wizard {
 
         s_RenderData.QuadPipelineState->Generate();
         
+        s_RenderData.QuadPipelineState->GetPipelineState()->GetStaticVariableByName(SHADER_TYPE_VERTEX, "PerFrame")->Set(s_RenderData.PerFrameData->GetBuffer());
         s_RenderData.QuadPipelineState->GetPipelineState()->GetStaticVariableByName(SHADER_TYPE_VERTEX, "PerFrame")->Set(s_RenderData.PerFrameData->GetBuffer());
 
         s_RenderData.QuadPipelineState->GetPipelineState()->CreateShaderResourceBinding(&s_RenderData.QuadSRB, true);
@@ -303,5 +316,20 @@ namespace Wizard {
         }
 
         return texIndex;
+    }
+
+    int Renderer2D::GetQuads()
+    {
+        return (s_RenderData.QuadVertexBufferPtr - s_RenderData.QuadVertexBufferBase) / 4;
+    }
+
+    int Renderer2D::GetVertices()
+    {
+        return s_RenderData.QuadVertexBufferPtr - s_RenderData.QuadVertexBufferBase;
+    }
+
+    int Renderer2D::GetIndices()
+    {
+        return s_RenderData.QuadIndexCount;
     }
 }

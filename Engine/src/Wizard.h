@@ -17,6 +17,8 @@
 
 #include "Scene/Components.h"
 #include "Scene/Scene.h"
+#include "Scene/SceneSerializer.h"
+#include "Scene/ScriptingEntity.h"
 
 #include "Renderer/Renderer.h"
 #include "Renderer/Renderer2D.h"
@@ -33,11 +35,11 @@
 using namespace Diligent;
 
 // Real Imgui
-#include "ThirdParty/imgui/imgui.h"
-#include "ThirdParty/imgui/backends/imgui_impl_glfw.h"
-#include "ThirdParty/imgui/backends/imgui_impl_dx12.h"
+#include "glm/gtc/type_ptr.hpp"
+#include "DiligentTools/ThirdParty/imgui/imgui.h"
+#include "DiligentTools/ThirdParty/imgui/backends/imgui_impl_glfw.h"
+#include "DiligentTools/ThirdParty/imgui/backends/imgui_impl_dx12.h"
 
-// Diligent Imgui
-#include "Imgui/interface/ImGuiDiligentRenderer.hpp"
-#include "Imgui/interface/ImGuiImplDiligent.hpp"
-#include "Imgui/interface/ImGuiUtils.hpp"
+#include "DiligentTools/Imgui/interface/ImGuiDiligentRenderer.hpp"
+#include "DiligentTools/Imgui/interface/ImGuiImplDiligent.hpp"
+

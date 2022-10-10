@@ -13,9 +13,14 @@ namespace Wizard {
             Renderer::Get()->SetClearColor(color);
         }
 
-        static void ClearRenderTarget(ITextureView *pView)
+        static void ClearRenderTarget(ITextureView* pView)
         {
             Renderer::Get()->ClearColor(pView);
+        }
+
+        static void ClearRenderTarget(Diligent::ITextureView *pView, const float *RGBA, RESOURCE_STATE_TRANSITION_MODE StateTransitionMode = RESOURCE_STATE_TRANSITION_MODE_TRANSITION )
+        {
+            Renderer::Get()->m_DeviceContext->ClearRenderTarget(pView, RGBA, StateTransitionMode);
         }
 
         static void ClearDepthStencil(ITextureView *pView, CLEAR_DEPTH_STENCIL_FLAGS ClearFlags, 

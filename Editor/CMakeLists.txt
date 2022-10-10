@@ -15,11 +15,14 @@ elseif(UNIX AND NOT APPLE)
 endif()
 
 set(SOURCE_DIRS 
+    src/Panels/ComponentPanel.cpp
     src/EditorLayer.cpp
+    src/ImGuiD3D12.cpp
 )
 
 add_executable(Editor src/WZEditor.cpp ${SOURCE_DIRS})
 target_include_directories(Editor PRIVATE ${CMAKE_SOURCE_DIR}/Engine/src)
+target_include_directories(Editor PRIVATE ${CMAKE_SOURCE_DIR}/Engine)
 
 target_link_libraries(Editor Engine)
 

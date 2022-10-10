@@ -18,7 +18,6 @@
 #    include <Graphics/GraphicsEngineMetal/interface/EngineFactoryMtl.h>
 #endif
 
-
 #include <Graphics/GraphicsEngine/interface/RenderDevice.h>
 #include <Graphics/GraphicsEngine/interface/DeviceContext.h>
 #include <Graphics/GraphicsEngine/interface/SwapChain.h>
@@ -60,6 +59,7 @@ namespace Wizard {
     {
     public:
         static Renderer* Get() {
+            
             static Renderer INSTANCE;
             return &INSTANCE;
         }
@@ -138,8 +138,17 @@ namespace Wizard {
         RefCntAutoPtr<IDeviceContext> m_DeviceContext;
         RefCntAutoPtr<ISwapChain> m_SwapChain;
 
-        float m_ClearColor[4] = { 0.35f, 0.35f, 0.35f, 1.0f };
+        int m_MousePointingEntity = 0; // 0 means nothing
+        RefCntAutoPtr<ITextureView> m_MousePickingView;
+        RefCntAutoPtr<ITexture> m_StagingTexture;
+
+        float m_ClearColor[4] = { 0.f, 0.f, 0.f, 1.0f };
 
         int m_DrawCall = 0;
+
+
+
+    friend class RenderTool;
+    friend class RenderCommand;
     };
 }

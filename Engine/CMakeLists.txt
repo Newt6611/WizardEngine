@@ -1,3 +1,6 @@
+# notes: DiligentTools/ThirdParty/imgui is not a submodule anymore(Diligent)
+# it's clone by myself. 
+
 cmake_minimum_required(VERSION 3.10)
 # project(Engine LANGUAGES CXX OBJC OBJCXX)
 project(Engine LANGUAGES)
@@ -49,9 +52,12 @@ set(SOURCE_DIRS
     src/Renderer/Texture.cpp
     src/Renderer/OrthographicCamera.cpp
     src/Renderer/OrthographicCameraController.cpp
+    src/Renderer/PerspectiveCamera.cpp
+    
 
     # Scene
     src/Scene/Scene.cpp
+    src/Scene/SceneSerializer.cpp
 
     # Platform
     src/Platform/WindowsInput.cpp
@@ -61,6 +67,7 @@ set(SOURCE_DIRS
 
     # thirdparty Diligent Imgui
     thirdparty/DiligentTools/ThirdParty/imgui/backends/imgui_impl_glfw.cpp
+    thirdparty/DiligentTools/ThirdParty/imgui/backends/imgui_impl_dx12.cpp
 )
 
 # Include Directories
@@ -68,22 +75,26 @@ set(INCLUDE_DIRS
     src
     src/Core 
     thirdparty/DiligentCore
-    thirdparty/DiligentTools
+    thirdparty/DiligentTools 
     
-    thirdparty
+    thirdparty 
+    thirdparty/box2d/include
     thirdparty/spdlog/include 
     thirdparty/glfw/include
     thirdparty/glm
     thirdparty/entt/single_include
+    thirdparty/yaml-cpp/include
 )
 
 # Libs
 set(LINK_LIBS 
     Diligent-Common 
     Diligent-GraphicsTools 
-    Diligent-TextureLoader 
     Diligent-Imgui 
-    glfw 
+    Diligent-TextureLoader 
+    glfw
+    box2d
+    yaml-cpp::yaml-cpp
 )
 
 # glfw: prevent glfw to build test or docmentation
@@ -96,6 +107,8 @@ add_library(Engine ${SOURCE_DIRS})
 add_subdirectory(thirdparty/DiligentCore)
 add_subdirectory(thirdparty/DiligentTools)
 add_subdirectory(thirdparty/glfw)
+add_subdirectory(thirdparty/box2d)
+add_subdirectory(thirdparty/yaml-cpp)
 
 # Diligent
 if(D3D11_SUPPORTED)

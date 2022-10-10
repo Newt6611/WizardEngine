@@ -9,14 +9,20 @@ struct PSInput
     float4 Color        : Color;
     float2 UV           : UV;
     uint TexIndex       : TexIndex;
+    int EntityID        : EntityID;
 };
 
 struct PSOutput
 {
     float4 Color : SV_TARGET;
+    float EntityID : SV_TARGET1;
 };
 
 void main(in PSInput PSIn, out PSOutput PSOut)
 {
-    PSOut.Color = g_Textures[NonUniformResourceIndex(PSIn.TexIndex)].Sample(g_Textures_sampler, PSIn.UV) * PSIn.Color;
+    float4 oColor = g_Textures[NonUniformResourceIndex(PSIn.TexIndex)].Sample(g_Textures_sampler, PSIn.UV) * PSIn.Color;
+    PSOut.Color = oColor;
+
+    // 0 is clear color
+    PSOut.EntityID = PSIn.EntityID + 1;
 }

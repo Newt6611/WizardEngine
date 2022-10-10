@@ -12,7 +12,6 @@ namespace Wizard {
 #ifdef WZ_APPLE
         WZ_ENGINE_INFO("APPLEEEEEEE");
 #endif
-
         m_Window = Window::Get();
         m_Window->Init(1600, 900);
         m_Window->SetEventCallback(BIND_FN_EVENT(Application::OnEvent));

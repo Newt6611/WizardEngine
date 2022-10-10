@@ -8,6 +8,7 @@
 #include "Core/Window.h"
 
 #include "Renderer2D.h"
+#include "Core/Input.h"
 
 #if WZ_APPLE
     extern void* GetNSWindowView(GLFWwindow* wnd);
@@ -135,6 +136,34 @@ namespace Wizard
         // Init Renderer2D
         Renderer2D::Init();
 
+        // Create MousePikcingView
+        {
+            RefCntAutoPtr<ITexture> tex;
+            TextureDesc desc;
+            desc.Name = "Picking";
+            desc.Type = RESOURCE_DIM_TEX_2D;
+            desc.Width = m_SwapChain->GetDesc().Width;
+            desc.Height = m_SwapChain->GetDesc().Height;
+            desc.Format = TEX_FORMAT_R32_FLOAT;
+            desc.CPUAccessFlags = CPU_ACCESS_READ;
+            desc.Usage = USAGE_DEFAULT;
+            desc.BindFlags = BIND_RENDER_TARGET | BIND_SHADER_RESOURCE;
+            m_Device->CreateTexture(desc, nullptr, &tex);
+            m_MousePickingView = tex->GetDefaultView(TEXTURE_VIEW_RENDER_TARGET);
+        }
+        // Staging Texture For Mouse Picking
+        {
+            RefCntAutoPtr<ITexture> tex;
+            TextureDesc desc;
+            desc.Name = "Staging";
+            desc.Type = RESOURCE_DIM_TEX_2D;
+            desc.Usage = USAGE_STAGING;
+            desc.CPUAccessFlags = CPU_ACCESS_READ;
+            desc.Width = 1;
+            desc.Height = 1;
+            desc.Format = TEX_FORMAT_R32_FLOAT;
+            m_Device->CreateTexture(desc, nullptr, &m_StagingTexture);
+        }
     }
 
     void Renderer::SetClearColor(float color[4])
@@ -142,7 +171,7 @@ namespace Wizard
         m_ClearColor[0] = color[0]; 
         m_ClearColor[1] = color[1]; 
         m_ClearColor[2] = color[2]; 
-        m_ClearColor[3] = color[3]; 
+        m_ClearColor[3] = color[3];
     }
 
     void Renderer::ClearColor(ITextureView* view)
@@ -157,12 +186,56 @@ namespace Wizard
 
     void Renderer::Present()
     {
+        // TODO: move to EditorLayer    
+        // m_DeviceContext->SetRenderTargets(0, nullptr, nullptr, RESOURCE_STATE_TRANSITION_MODE_NONE);
+        // m_DeviceContext->WaitForIdle();
+        // glm::vec2 mousePos = Input::GetMousePosition();
+        // if ((mousePos.x >= 0 && mousePos.x < m_SwapChain->GetDesc().Width) &&
+        //     (mousePos.y >= 0 && mousePos.y < m_SwapChain->GetDesc().Height))
+        // {
+        //     CopyTextureAttribs attr;
+        //     Box box;
+        //     box.MinX = mousePos.x;
+        //     box.MaxX = mousePos.x + 1;
+        //     box.MinY = mousePos.y;
+        //     box.MaxY = mousePos.y + 1;
+        //     box.MinZ = 0;
+        //     box.MaxZ = 1;
+
+        //     attr.pSrcBox = &box;
+        //     attr.pSrcTexture = m_MousePickingView->GetTexture();
+        //     attr.pDstTexture = m_StagingTexture;
+        //     m_DeviceContext->CopyTexture(attr);            
+        
+        //     MappedTextureSubresource mapdata;
+        //     m_DeviceContext->MapTextureSubresource(m_StagingTexture, 0, 0, MAP_READ, MAP_FLAG_DO_NOT_WAIT, nullptr, mapdata);
+        //     Float32* pRGBAData = reinterpret_cast<Float32*>(mapdata.pData);
+        //     m_MousePointingEntity = pRGBAData[0];
+        // }
+
+        // m_DeviceContext->UnmapTextureSubresource(m_StagingTexture, 0 , 0);
+        //
+
         m_SwapChain->Present();
     }
 
     void Renderer::OnResize(int width, int height)
     {
-        WZ_ENGINE_TRACE("Resize {} {}", width, height);
         m_SwapChain->Resize((Uint32)width, (Uint32)height);
+
+        {
+            RefCntAutoPtr<ITexture> tex;
+            TextureDesc desc;
+            desc.Name = "Picking";
+            desc.Type = RESOURCE_DIM_TEX_2D;
+            desc.Width = width;
+            desc.Height = height;
+            desc.Format = TEX_FORMAT_R32_FLOAT;
+            desc.CPUAccessFlags = CPU_ACCESS_READ;
+            desc.Usage = USAGE_DEFAULT;
+            desc.BindFlags = BIND_RENDER_TARGET | BIND_SHADER_RESOURCE;
+            m_Device->CreateTexture(desc, nullptr, &tex);
+            m_MousePickingView = tex->GetDefaultView(TEXTURE_VIEW_RENDER_TARGET);
+        }
     }
 }

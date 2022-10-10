@@ -16,3 +16,9 @@
 [submodule "Engine/thirdparty/entt"]
 	path = Engine/thirdparty/entt
 	url = https://github.com/skypjack/entt
+[submodule "Engine/thirdparty/box2d"]
+	path = Engine/thirdparty/box2d
+	url = https://github.com/erincatto/box2d
+[submodule "Engine/thirdparty/yaml-cpp"]
+	path = Engine/thirdparty/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp

@@ -17,6 +17,7 @@ endif()
 
 set(SOURCE_DIRS 
     src/Example2D.cpp
+    src/Example3D.cpp
 )
 
 add_executable(Sandbox src/Sandbox.cpp ${SOURCE_DIRS})
